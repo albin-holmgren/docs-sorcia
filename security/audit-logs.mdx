@@ -1,0 +1,115 @@
+---
+title: Audit Logs
+description: 'Track and monitor all activity'
+---
+
+## Overview
+
+Audit logs record every action in Sorcia for security, compliance, and troubleshooting.
+
+## Accessing Audit Logs
+
+**Settings** → **Security** → **Audit Logs**
+
+<Info>
+  Audit logs are available on Pro and Enterprise plans.
+</Info>
+
+## Logged Events
+
+### User Actions
+
+- **Login/Logout** - Authentication events
+- **Queries** - All search queries
+- **Document Access** - Which documents accessed
+- **Settings Changes** - Configuration modifications
+
+### Administrative Actions
+
+- **Member Invited/Removed** - Team changes
+- **Role Changes** - Permission modifications
+- **Integration Added/Removed** - Connection changes
+- **Billing Updates** - Subscription changes
+
+### System Events
+
+- **Document Indexed** - New documents added
+- **Document Updated** - Content changed
+- **Sync Completed** - Integration sync finished
+- **API Calls** - All API requests
+
+## Log Format
+
+```json
+{
+  "id": "log_abc123",
+  "timestamp": "2024-01-15T10:30:00Z",
+  "user_id": "user_123",
+  "user_email": "john@company.com",
+  "action": "query.completed",
+  "resource_type": "document",
+  "resource_id": "doc_abc",
+  "details": {
+    "question": "What's our vacation policy?",
+    "sources_used": 3,
+    "confidence": 0.95
+  },
+  "ip_address": "192.168.1.1",
+  "user_agent": "Mozilla/5.0..."
+}
+```
+
+## Filtering Logs
+
+Filter by:
+- **Date Range** - Specific time period
+- **User** - Specific team member
+- **Action Type** - Event category
+- **Resource** - Specific document/integration
+
+## Exporting Logs
+
+Export formats:
+- **CSV** - Spreadsheet analysis
+- **JSON** - Programmatic processing
+- **PDF** - Compliance reports
+
+```bash
+# API export
+curl https://api.sorcia.ai/api/audit-logs?start=2024-01-01&end=2024-01-31 \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Accept: application/json"
+```
+
+## Retention
+
+| Plan | Retention Period |
+|------|------------------|
+| Free | 30 days |
+| Pro | 90 days |
+| Enterprise | 1+ years (configurable) |
+
+## Compliance
+
+Audit logs support:
+- **SOC 2** - Access logging requirements
+- **GDPR** - Data access records
+- **HIPAA** - Healthcare audit trails
+
+## Alerts
+
+Set up alerts for:
+- Failed login attempts
+- Unusual access patterns
+- Bulk data exports
+- Permission changes
+
+<Info>
+  Custom alerts available on Enterprise plans.
+</Info>
+
+## Next Steps
+
+<Card title="Compliance" icon="shield-check" href="/security/compliance">
+  Compliance certifications
+</Card>

@@ -1,0 +1,346 @@
+---
+title: Environment Setup
+description: 'Configure environment variables for Sorcia'
+---
+
+## Overview
+
+This guide explains all environment variables needed to run Sorcia. Use these in your `.env.local` file for development or in your deployment platform for production.
+
+<Warning>
+  Never commit `.env.local` to version control. Add it to `.gitignore`.
+</Warning>
+
+## Required Variables
+
+### Supabase (Database & Auth)
+
+<ParamField env="NEXT_PUBLIC_SUPABASE_URL" type="string" required>
+  Your Supabase project URL
+  
+  **Example**: `https://abcdefgh.supabase.co`
+  
+  **Where to find**: Supabase Dashboard → Project Settings → API → Project URL
+</ParamField>
+
+<ParamField env="NEXT_PUBLIC_SUPABASE_ANON_KEY" type="string" required>
+  Supabase anonymous (public) key
+  
+  **Example**: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...`
+  
+  **Where to find**: Supabase Dashboard → Project Settings → API → anon public
+</ParamField>
+
+<ParamField env="SUPABASE_SERVICE_ROLE_KEY" type="string" required>
+  Supabase service role (admin) key
+  
+  **Example**: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...`
+  
+  **Where to find**: Supabase Dashboard → Project Settings → API → service_role
+  
+  <Warning>Keep this secret! Has full database access.</Warning>
+</ParamField>
+
+### AI Configuration
+
+<ParamField env="OPENAI_API_KEY" type="string">
+  OpenAI API key for embeddings and completions
+  
+  **Example**: `sk-proj-abc123...`
+  
+  **Where to get**: [platform.openai.com/api-keys](https://platform.openai.com/api-keys)
+</ParamField>
+
+**OR** use an AI Gateway:
+
+<ParamField env="AI_GATEWAY_URL" type="string">
+  AI Gateway URL (alternative to OpenAI direct)
+  
+  **Example**: `https://gateway.ai.cloudflare.com/v1/your-account/sorcia`
+</ParamField>
+
+<ParamField env="AI_GATEWAY_API_KEY" type="string">
+  AI Gateway API key
+</ParamField>
+
+### Nango (Integrations)
+
+<ParamField env="NANGO_SECRET_KEY" type="string" required>
+  Nango secret key for server-side API calls
+  
+  **Example**: `nango_secret_key_live_abc123...`
+  
+  **Where to find**: Nango Dashboard → Environment Settings → Secret Key
+</ParamField>
+
+<ParamField env="NANGO_PUBLIC_KEY" type="string">
+  Nango public key for client-side OAuth
+  
+  **Example**: `nango_public_key_abc123...`
+</ParamField>
+
+<ParamField env="NANGO_HOSTPORT" type="string" default="https://api.nango.dev">
+  Nango API endpoint
+  
+  Use default unless self-hosting Nango
+</ParamField>
+
+### Stripe (Billing)
+
+<ParamField env="STRIPE_SECRET_KEY" type="string">
+  Stripe secret key
+  
+  **Example**: `sk_test_abc123...` (test) or `sk_live_abc123...` (production)
+  
+  **Where to find**: Stripe Dashboard → Developers → API Keys
+</ParamField>
+
+<ParamField env="STRIPE_WEBHOOK_SECRET" type="string">
+  Stripe webhook signing secret
+  
+  **Example**: `whsec_abc123...`
+  
+  **Where to find**: Stripe Dashboard → Developers → Webhooks → Endpoint
+</ParamField>
+
+<ParamField env="NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY" type="string">
+  Stripe publishable key (client-side)
+  
+  **Example**: `pk_test_abc123...`
+</ParamField>
+
+<ParamField env="NEXT_PUBLIC_STRIPE_PRICE_PRO" type="string">
+  Stripe Price ID for Pro plan
+  
+  **Example**: `price_1234567890abcdef`
+</ParamField>
+
+### Inngest (Background Jobs)
+
+<ParamField env="INNGEST_EVENT_KEY" type="string">
+  Inngest event key for sending events
+  
+  **Example**: `evt_abc123...`
+  
+  **Where to find**: Inngest Dashboard → API Keys
+</ParamField>
+
+<ParamField env="INNGEST_SIGNING_KEY" type="string">
+  Inngest signing key for webhook verification
+  
+  **Example**: `signkey_abc123...`
+</ParamField>
+
+### Slack (Optional)
+
+<ParamField env="SLACK_CLIENT_ID" type="string">
+  Slack OAuth client ID
+  
+  **Example**: `1234567890.1234567890`
+  
+  **Where to find**: Slack App Dashboard → Basic Information → App Credentials
+</ParamField>
+
+<ParamField env="SLACK_CLIENT_SECRET" type="string">
+  Slack OAuth client secret
+  
+  <Warning>Keep secret!</Warning>
+</ParamField>
+
+<ParamField env="SLACK_SIGNING_SECRET" type="string">
+  Slack request signing secret
+  
+  Used to verify webhook authenticity
+</ParamField>
+
+<ParamField env="SLACK_BOT_TOKEN" type="string">
+  Slack bot user OAuth token
+  
+  **Example**: `xoxb-your-bot-token-here`
+  
+  Generated after app installation
+</ParamField>
+
+### Application
+
+<ParamField env="NEXT_PUBLIC_APP_URL" type="string" required>
+  Your application's public URL
+  
+  **Development**: `http://localhost:3000`
+  
+  **Production**: `https://app.sorcia.ai`
+</ParamField>
+
+<ParamField env="NODE_ENV" type="string">
+  Node environment
+  
+  **Values**: `development`, `production`, `test`
+  
+  Auto-set by deployment platforms
+</ParamField>
+
+## Complete Example
+
+```bash .env.local
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=https://abcdefgh.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFiY2RlZmdoIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODI0MzgwMDAsImV4cCI6MTk5ODAyNDAwMH0.abc123
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.service_role_key_here
+
+# AI (choose one)
+OPENAI_API_KEY=sk-proj-abc123xyz
+# OR
+# AI_GATEWAY_URL=https://gateway.ai.cloudflare.com/v1/account/sorcia
+# AI_GATEWAY_API_KEY=your-gateway-key
+
+# Nango
+NANGO_SECRET_KEY=nango_secret_key_live_abc123
+NANGO_PUBLIC_KEY=nango_public_key_abc123
+NANGO_HOSTPORT=https://api.nango.dev
+
+# Stripe
+STRIPE_SECRET_KEY=sk_test_abc123
+STRIPE_WEBHOOK_SECRET=whsec_abc123
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_abc123
+NEXT_PUBLIC_STRIPE_PRICE_PRO=price_abc123
+
+# Inngest
+INNGEST_EVENT_KEY=evt_abc123
+INNGEST_SIGNING_KEY=signkey_abc123
+
+# Slack (optional)
+SLACK_CLIENT_ID=1234567890.1234567890
+SLACK_CLIENT_SECRET=abc123secret
+SLACK_SIGNING_SECRET=abc123signing
+SLACK_BOT_TOKEN=xoxb-1234567890-abc123
+
+# Application
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+NODE_ENV=development
+```
+
+## Validation
+
+Run the startup check to verify configuration:
+
+```bash
+npm run startup-check
+```
+
+Expected output:
+
+```
+✓ Environment variables loaded
+✓ Database connection successful
+✓ AI provider configured
+✓ Nango connection verified
+✓ Stripe configured (optional)
+✓ Inngest configured
+```
+
+## Security Best Practices
+
+<AccordionGroup>
+  <Accordion title="Use Different Keys per Environment">
+    - Development: Use test/sandbox keys
+    - Staging: Use separate test keys
+    - Production: Use live keys
+    - Never mix environments
+  </Accordion>
+  
+  <Accordion title="Rotate Keys Regularly">
+    - Rotate API keys quarterly
+    - Rotate after team member departure
+    - Use key expiration where available
+    - Monitor for unauthorized usage
+  </Accordion>
+  
+  <Accordion title="Limit Key Permissions">
+    - Use role-specific keys when possible
+    - Enable IP restrictions in production
+    - Set rate limits
+    - Monitor API usage
+  </Accordion>
+  
+  <Accordion title="Secure Storage">
+    - Use secrets managers (Vercel, AWS Secrets Manager)
+    - Never commit to version control
+    - Encrypt in CI/CD pipelines
+    - Audit access logs
+  </Accordion>
+</AccordionGroup>
+
+## Platform-Specific Setup
+
+<Tabs>
+  <Tab title="Vercel">
+    1. Go to Project Settings → Environment Variables
+    2. Add each variable with appropriate environment (Production, Preview, Development)
+    3. Redeploy after changes
+    
+    <Tip>Use Vercel CLI to import from .env.local: `vercel env pull`</Tip>
+  </Tab>
+  
+  <Tab title="Railway">
+    1. Go to Project → Variables
+    2. Add variables in key-value format
+    3. Click Deploy to apply
+    
+    Variables are encrypted at rest
+  </Tab>
+  
+  <Tab title="Netlify">
+    1. Site Settings → Build & Deploy → Environment
+    2. Add variables
+    3. Trigger new deploy
+    
+    Scopes: All deploys, Deploy previews, Branch deploys
+  </Tab>
+  
+  <Tab title="Docker">
+    Use environment file:
+    
+    ```bash
+    docker run -d \
+      --env-file .env.local \
+      -p 3000:3000 \
+      sorcia:latest
+    ```
+  </Tab>
+</Tabs>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Environment variables not loading">
+    - Verify `.env.local` is in project root
+    - Restart development server after changes
+    - Check for typos in variable names
+    - Ensure no trailing spaces in values
+  </Accordion>
+  
+  <Accordion title="Database connection failed">
+    - Verify Supabase URL and keys are correct
+    - Check database is not paused (free tier)
+    - Confirm IP is whitelisted (if restricted)
+    - Test connection manually
+  </Accordion>
+  
+  <Accordion title="OAuth redirects not working">
+    - Verify NEXT_PUBLIC_APP_URL matches deployed URL
+    - Check OAuth callback URLs in provider settings
+    - Ensure HTTPS in production
+    - Confirm redirect URIs are exact matches
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="First Query" icon="message" href="/getting-started/first-query">
+    Make your first API request
+  </Card>
+  <Card title="Integrations" icon="link" href="/integrations/overview">
+    Connect your data sources
+  </Card>
+</CardGroup>

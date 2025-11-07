@@ -1,0 +1,116 @@
+---
+title: Roles & Permissions
+description: 'Understanding user roles in Sorcia'
+---
+
+## User Roles
+
+Sorcia has three built-in roles with different permission levels.
+
+### Owner
+
+**Full administrative control**
+
+Permissions:
+- ✓ Manage billing and subscription
+- ✓ Delete organization
+- ✓ Assign/remove any role
+- ✓ All Admin permissions
+
+Limitations:
+- 1-3 owners per organization recommended
+
+### Admin
+
+**Team and integration management**
+
+Permissions:
+- ✓ Add/remove integrations
+- ✓ Invite/remove members
+- ✓ Configure organization settings
+- ✓ View analytics dashboard
+- ✓ All Member permissions
+
+Cannot:
+- ✗ Manage billing
+- ✗ Delete organization
+- ✗ Remove owners
+
+### Member
+
+**Standard user access**
+
+Permissions:
+- ✓ Ask questions via web/Slack
+- ✓ View query history (own)
+- ✓ Access permitted documents
+- ✓ Provide answer feedback
+
+Cannot:
+- ✗ Manage team
+- ✗ Configure integrations
+- ✗ View organization analytics
+
+## Permission Matrix
+
+| Action | Owner | Admin | Member |
+|--------|-------|-------|--------|
+| Ask questions | ✓ | ✓ | ✓ |
+| View own history | ✓ | ✓ | ✓ |
+| Invite members | ✓ | ✓ | ✗ |
+| Remove members | ✓ | ✓ | ✗ |
+| Add integrations | ✓ | ✓ | ✗ |
+| View analytics | ✓ | ✓ | ✗ |
+| Manage billing | ✓ | ✗ | ✗ |
+| Delete organization | ✓ | ✗ | ✗ |
+
+## Changing Roles
+
+### Promote User
+
+<Steps>
+  <Step title="Navigate">
+    Team Members → Find user
+  </Step>
+  <Step title="Change Role">
+    Click role dropdown → Select new role
+  </Step>
+  <Step title="Confirm">
+    Confirm change
+  </Step>
+</Steps>
+
+### Demote User
+
+Same process, select lower role level.
+
+<Warning>
+  Owners can only be changed by other Owners
+</Warning>
+
+## Custom Permissions
+
+For granular control beyond roles, use [Permission Groups](/team/permission-groups).
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Minimize Owners">
+    Keep 1-3 owners for security
+  </Accordion>
+  <Accordion title="Use Admin for Managers">
+    Team leads and managers should be Admins
+  </Accordion>
+  <Accordion title="Default to Member">
+    Most users should be Members
+  </Accordion>
+  <Accordion title="Review Quarterly">
+    Audit roles every 3 months
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<Card title="Permission Groups" icon="users" href="/team/permission-groups">
+  Create custom permission groups
+</Card>

@@ -1,0 +1,181 @@
+---
+title: Custom Embeddings
+description: 'Use your own embedding model'
+---
+
+## Overview
+
+Replace Sorcia's default embedding model with your own for specialized use cases.
+
+<Info>
+  Custom embeddings available on Enterprise plans only.
+</Info>
+
+## Use Cases
+
+- **Specialized domains** - Medical, legal, technical
+- **Multi-language** - Better non-English support
+- **Cost optimization** - Use cheaper models
+- **On-premise** - Keep embeddings in-house
+
+## Supported Models
+
+### OpenAI
+
+```typescript
+{
+  provider: 'openai',
+  model: 'text-embedding-3-large', // 3072 dimensions
+  dimensions: 3072,
+  api_key: process.env.OPENAI_API_KEY
+}
+```
+
+### Cohere
+
+```typescript
+{
+  provider: 'cohere',
+  model: 'embed-multilingual-v3.0',
+  dimensions: 1024,
+  api_key: process.env.COHERE_API_KEY
+}
+```
+
+### Self-Hosted
+
+```typescript
+{
+  provider: 'custom',
+  endpoint: 'https://your-model.com/embed',
+  dimensions: 768,
+  headers: {
+    'Authorization': 'Bearer your-token'
+  }
+}
+```
+
+## Configuration
+
+### Via Environment
+
+```bash
+# .env.local
+EMBEDDING_PROVIDER=openai
+EMBEDDING_MODEL=text-embedding-3-large
+EMBEDDING_DIMENSIONS=3072
+EMBEDDING_API_KEY=sk-...
+```
+
+### Via API
+
+```javascript
+await fetch('https://api.sorcia.ai/api/settings/embeddings', {
+  method: 'POST',
+  headers: {
+    'Authorization': `Bearer ${apiKey}`,
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    provider: 'openai',
+    model: 'text-embedding-3-large',
+    dimensions: 3072
+  })
+});
+```
+
+## Custom Endpoint
+
+Implement your own embedding service:
+
+```typescript
+// POST /embed endpoint
+interface EmbedRequest {
+  texts: string[];  // Batch of texts
+}
+
+interface EmbedResponse {
+  embeddings: number[][];  // Array of vectors
+  model: string;
+  dimensions: number;
+}
+
+// Example implementation
+app.post('/embed', async (req, res) => {
+  const { texts } = req.body;
+  
+  const embeddings = await yourModel.embed(texts);
+  
+  res.json({
+    embeddings,
+    model: 'your-model-v1',
+    dimensions: 768
+  });
+});
+```
+
+## Migration
+
+Switching embedding models requires re-indexing:
+
+<Steps>
+  <Step title="Update Configuration">
+    Set new embedding provider
+  </Step>
+  
+  <Step title="Start Re-indexing">
+    ```bash
+    npm run reindex --model=new-model
+    ```
+  </Step>
+  
+  <Step title="Monitor Progress">
+    Check re-indexing status in dashboard
+  </Step>
+  
+  <Step title="Verify">
+    Test queries with new embeddings
+  </Step>
+</Steps>
+
+<Warning>
+  Re-indexing large workspaces can take hours. Plan accordingly.
+</Warning>
+
+## Performance
+
+### Model Comparison
+
+| Model | Dimensions | Quality | Speed | Cost |
+|-------|------------|---------|-------|------|
+| text-embedding-3-small | 1536 | Good | Fast | Low |
+| text-embedding-3-large | 3072 | Best | Medium | Medium |
+| Cohere multilingual | 1024 | Good | Fast | Low |
+| Custom BERT | 768 | Variable | Slow | Variable |
+
+### Optimization Tips
+
+- **Batch requests** - Embed 100+ texts at once
+- **Cache embeddings** - Store for repeated queries
+- **Use quantization** - Reduce dimension precision
+- **Approximate search** - IVFFlat for speed
+
+## Testing
+
+Test embedding quality:
+
+```typescript
+// Similarity test
+const query = await embed("vacation policy");
+const doc1 = await embed("PTO guidelines");
+const doc2 = await embed("sales strategy");
+
+similarity(query, doc1); // Should be high (~0.8+)
+similarity(query, doc2); // Should be low (~0.3)
+```
+
+## Next Steps
+
+<Card title="Optimization" icon="zap" href="/advanced/optimization">
+  Performance optimization
+</Card>

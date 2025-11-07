@@ -1,0 +1,158 @@
+---
+title: Permission Groups
+description: 'Create custom access groups for fine-grained control'
+---
+
+## Overview
+
+Permission Groups allow you to control which users can access specific integrations or document sources beyond basic roles.
+
+## Creating Groups
+
+<Steps>
+  <Step title="Navigate">
+    Settings → Permission Groups
+  </Step>
+  <Step title="Create Group">
+    Click **New Group**
+  </Step>
+  <Step title="Configure">
+    - Name (e.g., "Sales Team")
+    - Description
+    - Access rules
+  </Step>
+  <Step title="Add Members">
+    Select users to add
+  </Step>
+</Steps>
+
+## Example Groups
+
+### Sales Team
+
+```yaml
+name: Sales Team
+members:
+  - john@company.com
+  - sarah@company.com
+
+integrations:
+  google-drive: /Sales/*
+  slack: #sales, #sales-emea
+  notion: Sales Playbook
+
+permissions:
+  query: true
+  export: false
+  analytics: team_only
+```
+
+### Engineering
+
+```yaml
+name: Engineering
+members:
+  - dev@company.com
+
+integrations:
+  github: all repositories
+  slack: #engineering, #dev-ops
+  notion: Engineering Wiki
+  confluence: Engineering Space
+
+permissions:
+  query: true
+  export: true
+  analytics: full
+```
+
+## Access Rules
+
+### Integration-Level
+
+Control access to entire integrations:
+
+- **Full Access** - All documents
+- **Restricted** - Specific folders/channels
+- **No Access** - Hidden from user
+
+### Source-Level
+
+Filter within integrations:
+
+<Tabs>
+  <Tab title="Slack">
+    ```yaml
+    include_channels:
+      - #sales
+      - #marketing
+    exclude_channels:
+      - #engineering
+    ```
+  </Tab>
+  <Tab title="Google Drive">
+    ```yaml
+    include_paths:
+      - /Sales/*
+      - /Marketing/*
+    exclude_paths:
+      - /Confidential/*
+    ```
+  </Tab>
+</Tabs>
+
+## Permission Types
+
+<ParamField group="query" type="boolean" default={true}>
+  Can query documents in group scope
+</ParamField>
+
+<ParamField group="export" type="boolean" default={false}>
+  Can export search results
+</ParamField>
+
+<ParamField group="analytics" type="string" default="none">
+  Analytics access level: `none`, `team_only`, `full`
+</ParamField>
+
+## Managing Groups
+
+### Add Members
+
+1. Open group
+2. Click **Add Members**
+3. Select users
+4. Save
+
+### Remove Members
+
+1. Open group
+2. Find member
+3. Click **Remove**
+
+### Edit Rules
+
+Update access rules anytime. Changes apply immediately.
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Group by Department">
+    Create groups matching your org structure
+  </Accordion>
+  <Accordion title="Principle of Least Privilege">
+    Grant minimum necessary access
+  </Accordion>
+  <Accordion title="Use Inheritance">
+    Build groups hierarchically
+  </Accordion>
+  <Accordion title="Document Groups">
+    Maintain documentation of group purposes
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<Card title="Access Control" icon="shield" href="/team/access-control">
+  Learn about access control
+</Card>

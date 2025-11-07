@@ -1,0 +1,128 @@
+---
+title: Custom Integrations
+description: 'Build your own integration with Sorcia'
+icon: 'code'
+---
+
+## Overview
+
+Build custom integrations using Sorcia's Documents API to index content from any source.
+
+## Integration Methods
+
+### 1. Documents API
+
+Push documents directly to Sorcia:
+
+```javascript
+const response = await fetch('https://api.sorcia.ai/api/documents', {
+  method: 'POST',
+  headers: {
+    'Authorization': `Bearer ${apiKey}`,
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    source: 'custom-crm',
+    external_id: 'doc-123',
+    title: 'Customer Success Guide',
+    content: 'Full document content...',
+    url: 'https://crm.example.com/docs/123',
+    metadata: {
+      author: 'john@company.com',
+      updated_at: '2024-01-15T10:00:00Z'
+    }
+  })
+});
+```
+
+### 2. Nango Custom Integration
+
+Use Nango for OAuth-based integrations:
+
+1. Create integration in Nango dashboard
+2. Configure OAuth flow
+3. Map data to Sorcia format
+4. Set up webhooks
+
+## Document Format
+
+```typescript
+interface Document {
+  source: string;          // Integration identifier
+  external_id: string;     // Unique ID in source system
+  title: string;           // Document title
+  content: string;         // Full text content
+  url?: string;            // Link to original
+  metadata?: {
+    author?: string;
+    updated_at?: string;
+    [key: string]: any;
+  };
+}
+```
+
+## Webhooks
+
+Receive notifications on document updates:
+
+```javascript
+// POST /your-webhook-endpoint
+{
+  "event": "document.indexed",
+  "document_id": "doc_abc123",
+  "source": "custom-crm",
+  "indexed_at": "2024-01-15T10:30:00Z"
+}
+```
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Batch Updates">
+    Send documents in batches of 100 for better performance
+  </Accordion>
+  <Accordion title="Unique IDs">
+    Use stable external_ids to prevent duplicates
+  </Accordion>
+  <Accordion title="Incremental Sync">
+    Only sync changed documents
+  </Accordion>
+</AccordionGroup>
+
+## Examples
+
+### CRM Integration
+
+```python
+import requests
+
+def sync_crm_to_sorcia(api_key):
+    crm_docs = fetch_crm_documents()
+    
+    for doc in crm_docs:
+        requests.post(
+            'https://api.sorcia.ai/api/documents',
+            headers={'Authorization': f'Bearer {api_key}'},
+            json={
+                'source': 'salesforce',
+                'external_id': doc['id'],
+                'title': doc['name'],
+                'content': doc['description'],
+                'metadata': {
+                    'account': doc['account_name'],
+                    'owner': doc['owner_email']
+                }
+            }
+        )
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Documents API" icon="file" href="/api-reference/documents">
+    API documentation
+  </Card>
+  <Card title="Webhooks" icon="webhook" href="/api-reference/webhooks">
+    Webhook setup
+  </Card>
+</CardGroup>

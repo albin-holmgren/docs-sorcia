@@ -1,0 +1,195 @@
+---
+title: Authentication Security
+description: 'How Sorcia authenticates users'
+---
+
+## Authentication Methods
+
+Sorcia supports multiple authentication methods:
+
+### Email & Password
+
+- **Hashing**: bcrypt with salt
+- **Minimum length**: 8 characters
+- **Complexity**: Enforced in UI
+- **Breached passwords**: Checked against known breaches
+
+### Magic Links
+
+- **Time-limited**: 1-hour expiration
+- **Single-use**: Cannot be reused
+- **Signed**: HMAC signature verification
+
+### OAuth (Enterprise)
+
+- **Google** - Workspace accounts
+- **Microsoft** - Azure AD
+- **GitHub** - Organization SSO
+
+### SAML/OIDC (Enterprise)
+
+- **Custom IdP** - Your identity provider
+- **Just-in-Time** - Auto-provision users
+- **Group Mapping** - Sync permission groups
+
+## Session Management
+
+### JWT Tokens
+
+```typescript
+{
+  user_id: "user_123",
+  org_id: "org_abc",
+  role: "admin",
+  exp: 1234567890, // 1 hour
+  iat: 1234564290
+}
+```
+
+**Properties:**
+- **Expiration**: 1 hour
+- **Refresh**: Via refresh token
+- **Revocation**: Token blacklist
+- **Storage**: httpOnly cookies (web)
+
+### Refresh Tokens
+
+- **Long-lived**: 30 days
+- **Rotation**: New token on each use
+- **Revokable**: Can be invalidated
+
+## Multi-Factor Authentication (MFA)
+
+Enable MFA for enhanced security:
+
+<Steps>
+  <Step title="Enable in Settings">
+    Settings → Security → Enable MFA
+  </Step>
+  <Step title="Choose Method">
+    - Authenticator app (TOTP)
+    - SMS (Enterprise)
+    - Hardware key (Enterprise)
+  </Step>
+  <Step title="Scan QR Code">
+    Use app like Google Authenticator
+  </Step>
+  <Step title="Verify">
+    Enter 6-digit code
+  </Step>
+</Steps>
+
+<Warning>
+  Save backup codes in case you lose access to your MFA device.
+</Warning>
+
+## API Authentication
+
+### API Keys
+
+```bash
+curl https://api.sorcia.ai/api/query \
+  -H "X-API-Key: sk_live_abc123..."
+```
+
+**Security:**
+- SHA-256 hashed
+- Prefix identifies environment
+- Can be revoked anytime
+
+### Bearer Tokens
+
+```bash
+curl https://api.sorcia.ai/api/query \
+  -H "Authorization: Bearer eyJhbGc..."
+```
+
+**Security:**
+- JWT with signature verification
+- Short-lived (1 hour)
+- Automatic refresh
+
+## Security Best Practices
+
+<AccordionGroup>
+  <Accordion title="Use Strong Passwords">
+    - Minimum 12 characters
+    - Mix of uppercase, lowercase, numbers, symbols
+    - Unique to Sorcia (not reused)
+  </Accordion>
+  
+  <Accordion title="Enable MFA">
+    - Required for admins and owners
+    - Recommended for all users
+    - Use authenticator app, not SMS
+  </Accordion>
+  
+  <Accordion title="Rotate API Keys">
+    - Rotate quarterly
+    - Rotate after team member departure
+    - Never commit to version control
+  </Accordion>
+  
+  <Accordion title="Monitor Sessions">
+    - Review active sessions regularly
+    - Revoke unknown sessions
+    - Log out from shared devices
+  </Accordion>
+</AccordionGroup>
+
+## Session Security
+
+### Active Sessions
+
+View and manage: **Settings** → **Security** → **Active Sessions**
+
+Each session shows:
+- Device/browser
+- Location (IP-based)
+- Last activity
+- **Revoke** option
+
+### Automatic Logout
+
+Sessions automatically expire:
+- **Inactivity**: 7 days
+- **Absolute**: 30 days
+- **Token expiry**: 1 hour (refresh extends)
+
+## Password Security
+
+### Password Requirements
+
+- Minimum 8 characters
+- At least one uppercase letter
+- At least one number
+- Cannot be common password
+- Cannot be in breach database
+
+### Password Reset
+
+<Steps>
+  <Step title="Request Reset">
+    Click "Forgot Password" on login
+  </Step>
+  <Step title="Receive Email">
+    Check email for reset link
+  </Step>
+  <Step title="Create New Password">
+    Enter new password (meets requirements)
+  </Step>
+  <Step title="Verify">
+    Log in with new password
+  </Step>
+</Steps>
+
+**Security:**
+- Reset links expire in 1 hour
+- Previous password cannot be reused
+- All sessions invalidated on reset
+
+## Next Steps
+
+<Card title="Row-Level Security" icon="database" href="/security/row-level-security">
+  Learn about database security
+</Card>

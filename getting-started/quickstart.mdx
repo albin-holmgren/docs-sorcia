@@ -1,0 +1,217 @@
+---
+title: Quickstart
+description: 'Get started with Sorcia in 5 minutes'
+---
+
+## Welcome to Sorcia!
+
+This guide will walk you through setting up Sorcia and asking your first question. You'll have a fully functional knowledge base in under 5 minutes.
+
+<Note>
+  **Prerequisites**: You'll need a company email address and access to at least one integration (Slack, Notion, or Google Drive).
+</Note>
+
+## Step 1: Create Your Account
+
+<Steps>
+  <Step title="Sign Up">
+    Go to [sorcia.ai/signup](https://sorcia.ai/signup) and create your account.
+    
+    ```bash
+    ✓ Enter your email
+    ✓ Create a password
+    ✓ Name your organization
+    ```
+  </Step>
+  
+  <Step title="Verify Email">
+    Check your inbox and click the verification link. This confirms your email address.
+  </Step>
+  
+  <Step title="Access Dashboard">
+    Once verified, you'll be redirected to your Sorcia dashboard.
+  </Step>
+</Steps>
+
+## Step 2: Connect Your First Integration
+
+Let's connect Slack as your first integration. This will allow Sorcia to index your Slack conversations.
+
+<Tabs>
+  <Tab title="Slack">
+    1. Click **Integrations** in the sidebar
+    2. Click **Connect** on the Slack card
+    3. Authorize Sorcia in the Slack OAuth screen
+    4. Select which channels to sync (public channels by default)
+    5. Click **Allow**
+    
+    <Check>Your Slack workspace is now connected!</Check>
+  </Tab>
+  
+  <Tab title="Notion">
+    1. Click **Integrations** in the sidebar
+    2. Click **Connect** on the Notion card
+    3. Select your Notion workspace
+    4. Choose which pages to give Sorcia access to
+    5. Click **Allow access**
+    
+    <Check>Your Notion workspace is now connected!</Check>
+  </Tab>
+  
+  <Tab title="Google Drive">
+    1. Click **Integrations** in the sidebar
+    2. Click **Connect** on the Google Drive card
+    3. Sign in with your Google account
+    4. Grant Sorcia read-only access
+    5. Click **Allow**
+    
+    <Check>Your Google Drive is now connected!</Check>
+  </Tab>
+</Tabs>
+
+<Tip>
+  You can connect multiple integrations! Each one takes about 2 minutes to set up.
+</Tip>
+
+## Step 3: Wait for Initial Sync
+
+After connecting an integration, Sorcia will automatically index your documents.
+
+<Info>
+  **Sync Times**:
+  - Small workspace (< 1,000 docs): 2-5 minutes
+  - Medium workspace (1,000-10,000 docs): 10-30 minutes
+  - Large workspace (> 10,000 docs): 1-2 hours
+  
+  You can start asking questions as soon as the first documents are indexed!
+</Info>
+
+You can monitor sync progress in the **Integrations** page:
+
+```bash
+✓ Google Drive: 847 documents synced
+⏳ Slack: 2,453 messages synced (in progress...)
+```
+
+## Step 4: Ask Your First Question
+
+Now that you have documents indexed, let's ask a question!
+
+### Option A: Web App
+
+1. Click **Ask Sorcia** in the sidebar
+2. Type your question in natural language
+3. Press Enter or click Send
+
+<CodeGroup>
+
+```bash Example
+What's our vacation policy?
+```
+
+```markdown Response
+Based on your HR Handbook (Google Drive):
+
+All full-time employees receive 20 days of paid time off (PTO) per year. 
+PTO accrues monthly at 1.67 days per month.
+
+Key points:
+- Unused PTO can roll over up to 5 days
+- Request time off at least 2 weeks in advance
+- Check team calendar before booking vacation
+
+**Sources:**
+- Employee Handbook 2024 (Google Drive)
+- #announcements - HR Update (Slack)
+```
+
+</CodeGroup>
+
+### Option B: Slack Command
+
+If you connected Slack, you can use the `/sorcia` command:
+
+```bash
+/sorcia What's our vacation policy?
+```
+
+Sorcia will respond directly in Slack with the answer and sources!
+
+<Tip>
+  Slack responses are **ephemeral** (only you can see them) by default for privacy.
+</Tip>
+
+## Step 5: Invite Your Team
+
+Make Sorcia even more valuable by inviting your team:
+
+1. Go to **Team Members** in the sidebar
+2. Click **Invite Member**
+3. Enter their email address
+4. Select their role (Member, Admin, or Owner)
+5. Click **Send Invitation**
+
+They'll receive an email with instructions to join your organization.
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card
+    title="Connect More Integrations"
+    icon="link"
+    href="/integrations/overview"
+  >
+    Add Notion, GitHub, Confluence, and more
+  </Card>
+  <Card
+    title="Set Up Permissions"
+    icon="shield"
+    href="/team/access-control"
+  >
+    Configure who can access what
+  </Card>
+  <Card
+    title="Explore the API"
+    icon="code"
+    href="/api-reference/query"
+  >
+    Build custom integrations
+  </Card>
+  <Card
+    title="Learn Best Practices"
+    icon="lightbulb"
+    href="/advanced/optimization"
+  >
+    Optimize your knowledge base
+  </Card>
+</CardGroup>
+
+## Common First Questions
+
+<AccordionGroup>
+  <Accordion title="How long does it take to sync documents?">
+    Initial sync time depends on the number of documents. Small workspaces (< 1,000 docs) typically complete in 2-5 minutes. You can start asking questions as soon as the first documents are indexed.
+  </Accordion>
+  
+  <Accordion title="Can I control which documents are indexed?">
+    Yes! For each integration, you can specify which folders, channels, or spaces to sync. You can also exclude specific documents or patterns.
+  </Accordion>
+  
+  <Accordion title="Who can see the answers?">
+    Sorcia respects your existing permissions. If a user doesn't have access to a document in the source system (e.g., Google Drive), they won't see it in Sorcia results.
+  </Accordion>
+  
+  <Accordion title="How much does it cost?">
+    Sorcia offers a free tier for small teams (1 user, 1 integration, 100 questions/month). Paid plans start at $49/month. See [pricing](https://sorcia.ai/pricing) for details.
+  </Accordion>
+</AccordionGroup>
+
+## Need Help?
+
+<Card title="Join our Discord" icon="discord" href="https://discord.gg/sorcia">
+  Get help from our team and community
+</Card>
+
+---
+
+**Congratulations!** 🎉 You've successfully set up Sorcia. Start asking questions and discover how much time you'll save!

@@ -1,0 +1,223 @@
+---
+title: AI Search & Embeddings
+description: 'How Sorcia AI-powered search works'
+---
+
+## Overview
+
+Sorcia uses **hybrid search** combining vector similarity, full-text search, and metadata filtering to find the most relevant documents for your questions.
+
+## Search Methods
+
+### 1. Vector Similarity (Semantic)
+
+Converts text to high-dimensional vectors to understand meaning:
+
+```typescript
+// Your question
+"What's our refund policy?"
+
+// Becomes vector
+[0.023, -0.14, 0.087, ...] // 1536 dimensions
+
+// Matches documents about
+- "Customer returns"
+- "Money-back guarantee"
+- "Purchase cancellation"
+```
+
+**Strengths**: Understanding synonyms, context, intent
+
+### 2. Full-Text Search (Keyword)
+
+Traditional keyword matching:
+
+```sql
+"JIRA-1234" → Finds exact ticket number
+"Q4 2024" → Matches specific quarter
+"john@company.com" → Finds user mentions
+```
+
+**Strengths**: Exact terms, codes, names, IDs
+
+### 3. Metadata Filtering
+
+Search by document properties:
+
+```javascript
+{
+  source: "google-drive",
+  dateRange: { start: "2024-01-01", end: "2024-12-31" },
+  author: "john@company.com"
+}
+```
+
+**Strengths**: Precise filtering, time-based queries
+
+## How It Works
+
+<Steps>
+  <Step title="Question Embedding">
+    Your question is converted to a 1536-dimension vector
+  </Step>
+  <Step title="Parallel Search">
+    Three searches run simultaneously:
+    - Vector similarity in pgvector
+    - Full-text search in PostgreSQL
+    - Metadata filtering
+  </Step>
+  <Step title="Result Fusion">
+    Results are merged and ranked by relevance
+  </Step>
+  <Step title="Permission Filter">
+    Only documents you can access are returned
+  </Step>
+  <Step title="Context Building">
+    Top 8 documents assembled into context
+  </Step>
+  <Step title="Answer Generation">
+    LLM generates answer with citations
+  </Step>
+</Steps>
+
+## Embeddings Explained
+
+### What are Embeddings?
+
+Embeddings are numerical representations of text that capture semantic meaning:
+
+```
+"dog" → [0.2, 0.8, -0.1, ...]
+"puppy" → [0.19, 0.79, -0.09, ...] // Similar to "dog"
+"car" → [-0.5, 0.1, 0.7, ...] // Different from "dog"
+```
+
+### Why Use Embeddings?
+
+<AccordionGroup>
+  <Accordion title="Understand Meaning">
+    Finds documents even when using different words
+  </Accordion>
+  <Accordion title="Cross-Language">
+    Works across languages (queries in English, docs in Spanish)
+  </Accordion>
+  <Accordion title="Similarity Search">
+    Mathematical distance = semantic similarity
+  </Accordion>
+</AccordionGroup>
+
+### Model Details
+
+**Embedding Model**: `text-embedding-3-small`
+- **Dimensions**: 1536
+- **Context Window**: 8,191 tokens
+- **Performance**: 62% MTEB score
+- **Cost**: $0.02 per 1M tokens
+
+## Ranking Algorithm
+
+Results scored using weighted formula:
+
+```typescript
+score = (
+  0.6 × vector_similarity +
+  0.3 × text_relevance +
+  0.1 × recency_boost
+) × permission_factor
+```
+
+**Example**:
+- Vector similarity: 0.92 (very relevant)
+- Text relevance: 0.75 (good keyword match)
+- Recency: 0.8 (updated last month)
+- Permission: 1.0 (full access)
+
+**Final Score**: 0.85 (High confidence)
+
+## Answer Generation
+
+### LLM Configuration
+
+**Model**: GPT-4 Turbo
+- **Temperature**: 0.7 (balanced creativity)
+- **Max Tokens**: 1000
+- **System Prompt**: Optimized for accuracy
+
+### Prompt Structure
+
+```
+System: You are Sorcia, an AI assistant that answers questions
+based on company documents. Always cite sources.
+
+Context: [Top 8 relevant document chunks]
+
+User Question: What's our vacation policy?
+
+Requirements:
+- Answer based only on provided context
+- Include source citations
+- If unsure, say so
+- Be concise and accurate
+```
+
+## Confidence Scoring
+
+Sorcia calculates confidence based on:
+
+| Factor | Weight | Description |
+|--------|--------|-------------|
+| Source relevance | 40% | How well docs match question |
+| Answer coverage | 30% | Completeness of answer |
+| Source agreement | 20% | Do multiple sources agree? |
+| Recency | 10% | How recent is the information? |
+
+**Confidence Levels**:
+- **90-100%**: Very confident, multiple sources agree
+- **70-89%**: Confident, sources support answer
+- **50-69%**: Moderate, limited or conflicting info
+- **< 50%**: Low confidence, verify manually
+
+## Optimization
+
+### Document Chunking
+
+Large documents split into ~500 token chunks:
+
+```
+Document: "Employee Handbook" (10,000 words)
+↓
+Chunks:
+1. "Introduction & Mission" (500 tokens)
+2. "Vacation Policy" (500 tokens)
+3. "Benefits Overview" (500 tokens)
+...
+```
+
+**Benefits**:
+- More precise matching
+- Better citations
+- Handles large documents
+
+### Index Performance
+
+```sql
+-- IVFFlat index for fast similarity search
+CREATE INDEX ON documents 
+USING ivfflat (embedding vector_cosine_ops) 
+WITH (lists = 100);
+```
+
+- **Query Time**: < 100ms
+- **Recall**: ~95%
+- **Scalability**: Millions of documents
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Try a Query" icon="search" href="/getting-started/first-query">
+    Make your first search
+  </Card>
+  <Card title="API Reference" icon="code" href="/api-reference/query">
+    Query API documentation
+  </Card>
+</CardGroup>

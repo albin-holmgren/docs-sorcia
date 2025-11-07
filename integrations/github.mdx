@@ -1,0 +1,55 @@
+---
+title: GitHub Integration  
+description: 'Search code, issues, and documentation'
+icon: 'github'
+---
+
+## Overview
+
+Connect GitHub to search repositories, issues, pull requests, and markdown documentation.
+
+## Setup
+
+<Steps>
+  <Step title="Connect">
+    Integrations → GitHub → "Connect to GitHub"
+  </Step>
+  <Step title="Authorize">
+    Grant read-only repository access
+  </Step>
+  <Step title="Select Repos">
+    Choose which repositories to sync
+  </Step>
+</Steps>
+
+## What Gets Synced
+
+- **README files** - Repository documentation
+- **Markdown docs** - Documentation folders
+- **Issues** - Titles, descriptions, comments
+- **Pull Requests** - Descriptions and discussions
+- **Wiki pages** - Repository wikis
+
+## Configuration
+
+```yaml
+Repositories:
+  include:
+    - org/frontend
+    - org/backend
+    - org/docs
+  exclude:
+    - org/archive-*
+```
+
+## Permissions
+
+Access based on GitHub permissions:
+- Public repos: All team members
+- Private repos: Repository collaborators only
+
+## Next Steps
+
+<Card title="Confluence" icon="book-open" href="/integrations/confluence">
+  Add wiki content
+</Card>

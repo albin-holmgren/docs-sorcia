@@ -1,0 +1,139 @@
+{
+  "$schema": "https://mintlify.com/schema.json",
+  "name": "Sorcia",
+  "logo": {
+    "light": "/logo/sorcia-light.svg",
+    "dark": "/logo/sorcia-dark.svg"
+  },
+  "favicon": "/logo/favicon.ico",
+  "colors": {
+    "primary": "#F97316",
+    "light": "#FEF3E8",
+    "dark": "#1a1a1a",
+    "background": {
+      "light": "#FAF9F5",
+      "dark": "#141413"
+    }
+  },
+  "topbarLinks": [
+    {
+      "name": "Sign Up",
+      "url": "http://localhost:3000/signup"
+    }
+  ],
+  "topbarCtaButton": {
+    "name": "Try Sorcia",
+    "url": "http://localhost:3000/signup"
+  },
+  "tabs": [
+    {
+      "name": "API Reference",
+      "url": "api-reference"
+    },
+    {
+      "name": "Integrations",
+      "url": "integrations"
+    }
+  ],
+  "anchors": [
+    {
+      "name": "Community",
+      "icon": "discord",
+      "url": "https://discord.gg/sorcia"
+    },
+    {
+      "name": "GitHub",
+      "icon": "github",
+      "url": "https://github.com/sorcia-ai/sorcia"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "Introduction",
+      "pages": [
+        "introduction",
+        "what-is-sorcia",
+        "key-features"
+      ]
+    },
+    {
+      "group": "Getting Started",
+      "pages": [
+        "getting-started/quickstart",
+        "getting-started/installation",
+        "getting-started/environment-setup",
+        "getting-started/first-query"
+      ]
+    },
+    {
+      "group": "Core Concepts",
+      "pages": [
+        "core-concepts/how-it-works",
+        "core-concepts/organizations",
+        "core-concepts/integrations",
+        "core-concepts/ai-search",
+        "core-concepts/permissions"
+      ]
+    },
+    {
+      "group": "Integrations",
+      "pages": [
+        "integrations/overview",
+        "integrations/slack",
+        "integrations/notion",
+        "integrations/google-drive",
+        "integrations/github",
+        "integrations/confluence",
+        "integrations/custom"
+      ]
+    },
+    {
+      "group": "API Reference",
+      "pages": [
+        "api-reference/authentication",
+        "api-reference/query",
+        "api-reference/documents",
+        "api-reference/organizations",
+        "api-reference/webhooks"
+      ]
+    },
+    {
+      "group": "Team Management",
+      "pages": [
+        "team/inviting-members",
+        "team/roles-permissions",
+        "team/permission-groups",
+        "team/access-control"
+      ]
+    },
+    {
+      "group": "Security & Compliance",
+      "pages": [
+        "security/overview",
+        "security/authentication",
+        "security/row-level-security",
+        "security/audit-logs",
+        "security/compliance"
+      ]
+    },
+    {
+      "group": "Advanced",
+      "pages": [
+        "advanced/self-hosting",
+        "advanced/custom-embeddings",
+        "advanced/optimization",
+        "advanced/troubleshooting"
+      ]
+    }
+  ],
+  "footerSocials": {
+    "twitter": "https://twitter.com/sorcia_ai",
+    "github": "https://github.com/sorcia-ai",
+    "linkedin": "https://www.linkedin.com/company/sorcia"
+  },
+  "analytics": {
+    "posthog": {
+      "apiKey": "phc_placeholder_replace_with_real_key"
+    }
+  }
+}

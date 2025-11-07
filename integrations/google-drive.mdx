@@ -1,0 +1,81 @@
+---
+title: Google Drive Integration
+description: 'Search across all your Google Drive files'
+icon: 'google'
+---
+
+## Overview
+
+Connect Google Drive to search documents, spreadsheets, presentations, and PDFs stored in your Drive.
+
+## Setup
+
+<Steps>
+  <Step title="Connect">
+    Integrations → Google Drive → Click "Connect"
+  </Step>
+  <Step title="Sign In">
+    Sign in with your Google account
+  </Step>
+  <Step title="Grant Permissions">
+    Allow read-only access to your Drive
+  </Step>
+  <Step title="Configure">
+    Select folders to sync (optional)
+  </Step>
+</Steps>
+
+## Supported File Types
+
+- **Google Docs** - Full text extraction
+- **Google Sheets** - Text content from cells
+- **Google Slides** - Speaker notes and text
+- **PDFs** - Text extraction via OCR
+- **Text files** - Plain text, markdown
+
+## Configuration
+
+### Folder Selection
+
+```yaml
+Include:
+  - /Company/Documentation
+  - /Shared Drives/Product
+  - /My Drive/Resources
+
+Exclude:
+  - /Personal
+  - /Archive
+```
+
+### Sync Settings
+
+| Setting | Default |
+|---------|---------|
+| Shared drives | Include |
+| Shared with me | Include |
+| Starred only | Exclude |
+
+## Permissions
+
+Sorcia mirrors Google Drive permissions:
+- Files you own
+- Files shared with you
+- Shared drive files (if member)
+
+## Sync Performance
+
+- **Initial**: 10-30 minutes for 1,000 files
+- **Real-time**: Webhook updates < 60 seconds
+- **Polling**: Every 15 minutes (fallback)
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Notion" icon="file-text" href="/integrations/notion">
+    Add documentation
+  </Card>
+  <Card title="GitHub" icon="github" href="/integrations/github">
+    Connect code repos
+  </Card>
+</CardGroup>

@@ -1,0 +1,438 @@
+---
+title: Authentication
+description: 'Authenticate and authorize API requests'
+---
+
+## Overview
+
+Sorcia uses **JWT-based authentication** powered by Supabase Auth. All API requests require a valid access token in the Authorization header.
+
+<Info>
+  **Authentication Flow**: Sign up/Login → Email Verification → Access Token → API Requests
+</Info>
+
+## Authentication Methods
+
+Sorcia supports multiple authentication methods:
+
+<CardGroup cols={2}>
+  <Card title="Email & Password" icon="envelope">
+    Traditional email/password authentication
+  </Card>
+  <Card title="Magic Link" icon="wand-magic-sparkles">
+    Passwordless login via email
+  </Card>
+  <Card title="OAuth" icon="key">
+    Google, GitHub, Microsoft (Enterprise)
+  </Card>
+  <Card title="API Keys" icon="code">
+    Server-to-server authentication
+  </Card>
+</CardGroup>
+
+## Sign Up
+
+Create a new user account and organization.
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST https://api.sorcia.ai/api/auth/signup \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "user@company.com",
+    "password": "SecurePass123!",
+    "organizationName": "Acme Inc"
+  }'
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.sorcia.ai/api/auth/signup', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    email: 'user@company.com',
+    password: 'SecurePass123!',
+    organizationName: 'Acme Inc'
+  })
+});
+
+const data = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.post('https://api.sorcia.ai/api/auth/signup', json={
+    'email': 'user@company.com',
+    'password': 'SecurePass123!',
+    'organizationName': 'Acme Inc'
+})
+
+data = response.json()
+```
+
+</CodeGroup>
+
+### Request Body
+
+<ParamField body="email" type="string" required>
+  User's email address
+</ParamField>
+
+<ParamField body="password" type="string" required>
+  Password (minimum 6 characters)
+</ParamField>
+
+<ParamField body="organizationName" type="string" required>
+  Name of the organization to create
+</ParamField>
+
+### Response
+
+```json
+{
+  "success": true,
+  "user": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "email": "user@company.com"
+  },
+  "message": "Please check your email to verify your account"
+}
+```
+
+<Warning>
+  **Email Verification Required**: Users must verify their email before they can log in.
+</Warning>
+
+## Login
+
+Authenticate with email and password to receive an access token.
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST https://api.sorcia.ai/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "user@company.com",
+    "password": "SecurePass123!"
+  }'
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.sorcia.ai/api/auth/login', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    email: 'user@company.com',
+    password: 'SecurePass123!'
+  })
+});
+
+const { access_token, refresh_token } = await response.json();
+```
+
+```python Python
+response = requests.post('https://api.sorcia.ai/api/auth/login', json={
+    'email': 'user@company.com',
+    'password': 'SecurePass123!'
+})
+
+tokens = response.json()
+access_token = tokens['access_token']
+```
+
+</CodeGroup>
+
+### Request Body
+
+<ParamField body="email" type="string" required>
+  User's email address
+</ParamField>
+
+<ParamField body="password" type="string" required>
+  User's password
+</ParamField>
+
+### Response
+
+```json
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "refresh_token": "v1.MR5twgYWhT3y8pE4F-foo4o2M4g...",
+  "expires_in": 3600,
+  "token_type": "bearer",
+  "user": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "email": "user@company.com",
+    "organization_id": "660e8400-e29b-41d4-a716-446655440001"
+  }
+}
+```
+
+<ResponseField name="access_token" type="string">
+  JWT access token (valid for 1 hour)
+</ResponseField>
+
+<ResponseField name="refresh_token" type="string">
+  Refresh token for obtaining new access tokens
+</ResponseField>
+
+<ResponseField name="expires_in" type="number">
+  Token expiration time in seconds
+</ResponseField>
+
+## Magic Link
+
+Request a passwordless login link sent via email.
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST https://api.sorcia.ai/api/auth/magic-link \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "user@company.com"
+  }'
+```
+
+```javascript JavaScript
+await fetch('https://api.sorcia.ai/api/auth/magic-link', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ email: 'user@company.com' })
+});
+```
+
+</CodeGroup>
+
+### Response
+
+```json
+{
+  "success": true,
+  "message": "Check your email for a login link"
+}
+```
+
+<Tip>
+  Magic links expire after 1 hour and can only be used once.
+</Tip>
+
+## Refresh Token
+
+Exchange a refresh token for a new access token.
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST https://api.sorcia.ai/api/auth/refresh \
+  -H "Content-Type: application/json" \
+  -d '{
+    "refresh_token": "v1.MR5twgYWhT3y8pE4F-foo4o2M4g..."
+  }'
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.sorcia.ai/api/auth/refresh', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ refresh_token: refreshToken })
+});
+
+const { access_token } = await response.json();
+```
+
+</CodeGroup>
+
+### Response
+
+```json
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "refresh_token": "v1.NewRefreshTokenHere...",
+  "expires_in": 3600,
+  "token_type": "bearer"
+}
+```
+
+## Making Authenticated Requests
+
+Include the access token in the `Authorization` header for all API requests:
+
+<CodeGroup>
+
+```bash cURL
+curl https://api.sorcia.ai/api/ai/query \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "question": "What is our vacation policy?"
+  }'
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.sorcia.ai/api/ai/query', {
+  method: 'POST',
+  headers: {
+    'Authorization': `Bearer ${accessToken}`,
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    question: 'What is our vacation policy?'
+  })
+});
+```
+
+```python Python
+headers = {
+    'Authorization': f'Bearer {access_token}',
+    'Content-Type': 'application/json'
+}
+
+response = requests.post(
+    'https://api.sorcia.ai/api/ai/query',
+    headers=headers,
+    json={'question': 'What is our vacation policy?'}
+)
+```
+
+</CodeGroup>
+
+## API Keys (Server-to-Server)
+
+For server-to-server integrations, use API keys instead of user tokens.
+
+### Generate API Key
+
+1. Navigate to **Settings** → **API Keys**
+2. Click **Create API Key**
+3. Name your key (e.g., "Production Server")
+4. Copy the key immediately (it won't be shown again)
+
+<Warning>
+  **Security**: API keys have full access to your organization. Store them securely and never commit them to version control.
+</Warning>
+
+### Using API Keys
+
+Include the API key in the `X-API-Key` header:
+
+```bash
+curl https://api.sorcia.ai/api/ai/query \
+  -H "X-API-Key: sk_live_abc123..." \
+  -H "Content-Type: application/json" \
+  -d '{"question": "What is our vacation policy?"}'
+```
+
+### Rotate API Keys
+
+Regularly rotate API keys for security:
+
+1. Generate a new API key
+2. Update your applications to use the new key
+3. Delete the old key once migration is complete
+
+## Error Responses
+
+### Unauthorized (401)
+
+```json
+{
+  "error": "Unauthorized",
+  "message": "Invalid or expired token"
+}
+```
+
+**Solutions**:
+- Verify token is included in header
+- Check token hasn't expired
+- Refresh token if needed
+
+### Forbidden (403)
+
+```json
+{
+  "error": "Forbidden",
+  "message": "Insufficient permissions"
+}
+```
+
+**Solutions**:
+- Verify user has required role
+- Check organization membership
+- Contact admin for access
+
+### Rate Limited (429)
+
+```json
+{
+  "error": "Too Many Requests",
+  "message": "Rate limit exceeded",
+  "retry_after": 60
+}
+```
+
+**Solutions**:
+- Implement exponential backoff
+- Reduce request frequency
+- Upgrade plan for higher limits
+
+## Rate Limits
+
+API rate limits vary by plan:
+
+| Plan | Requests/Minute | Burst Limit |
+|------|----------------|-------------|
+| Free | 10 | 20 |
+| Pro | 100 | 200 |
+| Enterprise | 1000 | 2000 |
+
+<Tip>
+  Monitor your rate limit usage via the `X-RateLimit-*` response headers.
+</Tip>
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Store Tokens Securely">
+    - Never store tokens in localStorage (XSS vulnerable)
+    - Use httpOnly cookies for web apps
+    - Use secure storage (Keychain/Keystore) for mobile apps
+    - Encrypt tokens at rest in databases
+  </Accordion>
+  
+  <Accordion title="Handle Token Expiration">
+    - Implement automatic token refresh
+    - Handle 401 errors gracefully
+    - Show re-login prompt when refresh fails
+  </Accordion>
+  
+  <Accordion title="Use HTTPS Only">
+    - Never send tokens over HTTP
+    - Enable HSTS in production
+    - Pin certificates for mobile apps
+  </Accordion>
+  
+  <Accordion title="Implement Logout">
+    - Clear tokens on logout
+    - Revoke refresh tokens server-side
+    - Clear all session data
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Query API" icon="search" href="/api-reference/query">
+    Learn how to search your knowledge base
+  </Card>
+  <Card title="Organizations API" icon="building" href="/api-reference/organizations">
+    Manage organizations and members
+  </Card>
+</CardGroup>

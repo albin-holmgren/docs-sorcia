@@ -1,0 +1,162 @@
+---
+title: Notion Integration
+description: 'Connect Sorcia to your Notion workspace'
+icon: 'file-text'
+---
+
+## Overview
+
+Connect Notion to search across all your workspace pages, databases, and documentation. Sorcia syncs your Notion content in real-time via webhooks.
+
+## Setup
+
+<Steps>
+  <Step title="Navigate to Integrations">
+    Go to Integrations page in Sorcia dashboard
+  </Step>
+  <Step title="Click Connect">
+    Find Notion card and click "Connect to Notion"
+  </Step>
+  <Step title="Select Workspace">
+    Choose your Notion workspace from the list
+  </Step>
+  <Step title="Grant Access">
+    Select which pages Sorcia can access:
+    - Specific pages
+    - All pages in workspace (recommended)
+  </Step>
+  <Step title="Authorize">
+    Click "Allow access" to complete connection
+  </Step>
+</Steps>
+
+<Check>Setup complete! Notion will begin syncing immediately.</Check>
+
+## What Gets Synced
+
+### Content Types
+
+- **Pages** - All text content, headings, lists
+- **Databases** - Tables, boards, galleries
+- **Inline content** - Callouts, quotes, code blocks
+- **Nested pages** - Full page hierarchy
+- **Comments** - Discussion threads (optional)
+
+### Excluded Content
+
+- Private pages (unless explicitly shared)
+- Deleted/archived pages
+- Images and media files
+- Embedded content from external sources
+
+## Configuration
+
+### Sync Settings
+
+Access via **Integrations** → **Notion** → **Configure**
+
+| Setting | Options | Recommended |
+|---------|---------|-------------|
+| Pages | All, Selected | All |
+| Databases | Include, Exclude | Include |
+| Comments | Include, Exclude | Exclude |
+| History | All time, Last year | All time |
+
+### Page Selection
+
+Choose specific pages to sync:
+
+```yaml
+Include:
+  - Engineering Wiki
+  - Product Documentation
+  - Company Handbook
+
+Exclude:
+  - Personal Notes
+  - Meeting Notes Archive
+```
+
+## Permissions
+
+Sorcia respects Notion's permission model:
+
+<Tabs>
+  <Tab title="Workspace Pages">
+    Visible to all workspace members
+  </Tab>
+  <Tab title="Shared Pages">
+    Only visible to users with access
+  </Tab>
+  <Tab title="Private Pages">
+    Must be explicitly shared with Sorcia
+  </Tab>
+</Tabs>
+
+<Info>
+  Users only see Notion pages they have access to in the original workspace.
+</Info>
+
+## Sync Behavior
+
+### Initial Sync
+
+- **Small workspace** (< 100 pages): 2-5 minutes
+- **Medium workspace** (100-1,000 pages): 5-15 minutes  
+- **Large workspace** (> 1,000 pages): 15-30 minutes
+
+### Real-Time Updates
+
+Changes sync via webhooks:
+- Page edited → Updates within 60 seconds
+- Page created → Indexed immediately
+- Page deleted → Removed from search
+- Permissions changed → Access updated
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Pages not appearing">
+    - Verify page is shared with Sorcia integration
+    - Check page isn't in excluded list
+    - Wait for sync to complete (check status)
+    - Try manual re-sync
+  </Accordion>
+  
+  <Accordion title="Permission errors">
+    - Re-authorize Notion integration
+    - Verify workspace admin permissions
+    - Check page sharing settings
+  </Accordion>
+  
+  <Accordion title="Slow sync">
+    - Normal for large workspaces
+    - Sync runs in background
+    - Can query available pages immediately
+  </Accordion>
+</AccordionGroup>
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Organize with Hierarchies">
+    Use page hierarchies - Sorcia preserves context
+  </Accordion>
+  <Accordion title="Use Descriptive Titles">
+    Clear titles improve search relevance
+  </Accordion>
+  <Accordion title="Keep Pages Updated">
+    Regular updates ensure accurate answers
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Google Drive" icon="google" href="/integrations/google-drive">
+    Connect files and docs
+  </Card>
+  <Card title="Slack" icon="slack" href="/integrations/slack">
+    Add team conversations
+  </Card>
+</CardGroup>

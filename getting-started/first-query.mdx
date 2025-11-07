@@ -1,0 +1,352 @@
+---
+title: First Query
+description: 'Make your first AI-powered search query'
+---
+
+## Overview
+
+Now that Sorcia is set up and you have documents indexed, let's make your first query and understand the response.
+
+<Info>
+  **Prerequisites**: At least one integration connected and synced
+</Info>
+
+## Web Interface
+
+The easiest way to get started is through the web interface.
+
+### Step 1: Navigate to Ask Sorcia
+
+1. Log in to your Sorcia dashboard
+2. Click **Ask Sorcia** in the sidebar
+3. You'll see a clean chat interface
+
+### Step 2: Ask a Question
+
+Type a question in natural language. Here are some examples:
+
+<CodeGroup>
+
+```text HR Question
+What is our vacation policy?
+```
+
+```text Technical Question  
+How do I deploy to production?
+```
+
+```text Sales Question
+What's our pricing for enterprise customers?
+```
+
+```text General Question
+Where can I find the Q4 roadmap?
+```
+
+</CodeGroup>
+
+### Step 3: Review the Answer
+
+Sorcia will respond with:
+
+1. **AI-Generated Answer** - Natural language response
+2. **Source Citations** - Links to original documents
+3. **Confidence Score** - How certain the AI is (0-100%)
+4. **Related Questions** - Follow-up suggestions
+
+<img src="/images/first-query-response.png" alt="Query Response Example" />
+
+## API Request
+
+For programmatic access, use the Query API:
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST https://api.sorcia.ai/api/ai/query \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "question": "What is our vacation policy?"
+  }'
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.sorcia.ai/api/ai/query', {
+  method: 'POST',
+  headers: {
+    'Authorization': `Bearer ${accessToken}`,
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    question: 'What is our vacation policy?'
+  })
+});
+
+const data = await response.json();
+console.log('Answer:', data.answer);
+console.log('Sources:', data.citations);
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.sorcia.ai/api/ai/query',
+    headers={'Authorization': f'Bearer {access_token}'},
+    json={'question': 'What is our vacation policy?'}
+)
+
+data = response.json()
+print('Answer:', data['answer'])
+print('Confidence:', data['confidence'])
+```
+
+</CodeGroup>
+
+### Response
+
+```json
+{
+  "answer": "Based on your Employee Handbook, all full-time employees receive 20 days of paid time off (PTO) per year. PTO accrues monthly at 1.67 days per month. Key points:\n\n- Unused PTO can roll over up to 5 days\n- Request time off at least 2 weeks in advance\n- Check team calendar before booking vacation",
+  "confidence": 0.95,
+  "citations": [
+    {
+      "id": "doc_abc123",
+      "title": "Employee Handbook 2024",
+      "source": "google-drive",
+      "url": "https://drive.google.com/file/d/abc123",
+      "snippet": "All full-time employees receive 20 days of paid time off...",
+      "relevance": 0.92
+    }
+  ],
+  "related_questions": [
+    "How do I request time off?",
+    "Can I roll over unused vacation days?",
+    "What's the sick leave policy?"
+  ]
+}
+```
+
+## Understanding the Response
+
+### Confidence Score
+
+The confidence score indicates answer quality:
+
+| Score | Meaning | Action |
+|-------|---------|--------|
+| 90-100% | Very confident | Trust the answer |
+| 70-89% | Moderately confident | Verify with sources |
+| 50-69% | Low confidence | Review sources carefully |
+| < 50% | Very uncertain | Consider rephrasing question |
+
+<Tip>
+  Always check citations, especially for critical decisions
+</Tip>
+
+### Citations
+
+Each citation includes:
+
+- **Title** - Document name
+- **Source** - Where it came from (Slack, Notion, etc.)
+- **URL** - Direct link to original
+- **Snippet** - Relevant excerpt
+- **Relevance** - How relevant to your question (0-1)
+
+Click the URL to view the full document in its original location.
+
+### Related Questions
+
+Sorcia suggests follow-up questions based on:
+- Content of the answer
+- Common patterns in your knowledge base
+- Questions other users have asked
+
+## Slack Command
+
+If you connected Slack, try the `/sorcia` command:
+
+```bash
+/sorcia What is our vacation policy?
+```
+
+You'll get an ephemeral response (only you see it) with the same answer and citations.
+
+<img src="/images/slack-command-example.png" alt="Slack Command Example" />
+
+## Advanced Querying
+
+### Filter by Source
+
+Search only specific integrations:
+
+```javascript
+{
+  "question": "Latest product updates",
+  "filters": {
+    "sources": ["notion", "slack"]
+  }
+}
+```
+
+### Filter by Date
+
+Find recent information:
+
+```javascript
+{
+  "question": "Recent engineering updates",
+  "filters": {
+    "dateRange": {
+      "start": "2024-01-01",
+      "end": "2024-12-31"
+    }
+  }
+}
+```
+
+### Limit Results
+
+Control how many sources to search:
+
+```javascript
+{
+  "question": "Company policies",
+  "options": {
+    "limit": 5  // Max 5 source documents
+  }
+}
+```
+
+## Tips for Better Results
+
+<AccordionGroup>
+  <Accordion title="Be Specific">
+    ❌ Bad: "Tell me about sales"
+    
+    ✅ Good: "What were our Q4 2024 sales numbers?"
+  </Accordion>
+  
+  <Accordion title="Include Context">
+    ❌ Bad: "How do I deploy?"
+    
+    ✅ Good: "How do I deploy the frontend to production?"
+  </Accordion>
+  
+  <Accordion title="Use Natural Language">
+    ❌ Bad: "vacation policy PTO days rollover"
+    
+    ✅ Good: "How many vacation days do I get and can I roll them over?"
+  </Accordion>
+  
+  <Accordion title="Iterate">
+    If the first answer isn't perfect:
+    - Rephrase your question
+    - Add more context
+    - Use filters to narrow scope
+    - Try related questions
+  </Accordion>
+</AccordionGroup>
+
+## Common Questions
+
+<AccordionGroup>
+  <Accordion title="Why is my answer incomplete?">
+    **Possible reasons**:
+    - Documents haven't finished syncing
+    - Information is in documents you don't have access to
+    - Question is too broad
+    - Information doesn't exist in your knowledge base
+    
+    **Solution**: Check sync status, narrow your question, or add more integrations
+  </Accordion>
+  
+  <Accordion title="Why are there no results?">
+    **Possible reasons**:
+    - No documents match your query
+    - Documents haven't been indexed yet
+    - Permissions restrict access
+    
+    **Solution**: Wait for sync to complete, check permissions, try broader questions
+  </Accordion>
+  
+  <Accordion title="How do I share an answer with my team?">
+    **Web**: Click "Share" button and copy link
+    
+    **Slack**: Click "Share with channel" after receiving ephemeral response
+    
+    **API**: Store the `query_id` and share the permalink
+  </Accordion>
+  
+  <Accordion title="Can I edit or improve answers?">
+    Not directly, but you can:
+    - Update the source documents
+    - Wait for re-sync (automatic)
+    - Provide feedback (👍/👎) to help improve future answers
+  </Accordion>
+</AccordionGroup>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Connect More Integrations" icon="link" href="/integrations/overview">
+    Add Notion, GitHub, Confluence
+  </Card>
+  <Card title="Invite Your Team" icon="users" href="/team/inviting-members">
+    Share Sorcia with teammates
+  </Card>
+  <Card title="Explore the API" icon="code" href="/api-reference/query">
+    Build custom integrations
+  </Card>
+  <Card title="Set Up Permissions" icon="shield" href="/team/access-control">
+    Configure access control
+  </Card>
+</CardGroup>
+
+## Example Queries by Use Case
+
+### For Engineering
+
+```text
+- How do we handle database migrations?
+- What's our code review process?
+- Where is the staging environment URL?
+- How do I set up my local development environment?
+```
+
+### For Sales
+
+```text
+- What's our pricing for enterprise customers?
+- How do we handle discounts?
+- What's included in the Pro plan?
+- Who are our main competitors?
+```
+
+### For HR
+
+```text
+- How do employees request time off?
+- What's our parental leave policy?
+- How do I submit an expense report?
+- What benefits do we offer?
+```
+
+### For Product
+
+```text
+- What's on the Q1 roadmap?
+- What feedback did we get on the last release?
+- What are our top feature requests?
+- How do we prioritize features?
+```
+
+<Tip>
+  Save your most common questions as "shortcuts" in the web interface for quick access
+</Tip>
+
+---
+
+**Congratulations!** 🎉 You've made your first query. Keep exploring and discover how Sorcia can help your team find answers faster.

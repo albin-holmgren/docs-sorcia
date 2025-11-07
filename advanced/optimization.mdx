@@ -1,0 +1,315 @@
+---
+title: Performance Optimization
+description: 'Optimize Sorcia for speed and scale'
+---
+
+## Query Performance
+
+### Optimize Search
+
+**Use Filters**
+
+Narrow results for faster queries:
+
+```javascript
+{
+  question: "Product updates",
+  filters: {
+    sources: ["notion"],  // Only search Notion
+    dateRange: {
+      start: "2024-01-01",  // Recent documents only
+      end: "2024-12-31"
+    }
+  }
+}
+```
+
+**Limit Results**
+
+Request fewer documents:
+
+```javascript
+{
+  question: "Company policies",
+  options: {
+    limit: 5  // Default is 8
+  }
+}
+```
+
+### Caching Strategy
+
+**Query Results**
+
+Cache identical queries:
+
+```typescript
+const cacheKey = `query:${hash(question)}`;
+const cached = await redis.get(cacheKey);
+
+if (cached) {
+  return JSON.parse(cached);
+}
+
+const result = await sorcia.query(question);
+await redis.setex(cacheKey, 600, JSON.stringify(result)); // 10 min
+return result;
+```
+
+**Embeddings**
+
+Embeddings are automatically cached permanently.
+
+## Database Optimization
+
+### Indexing
+
+Ensure critical indexes exist:
+
+```sql
+-- Vector similarity (IVFFlat)
+CREATE INDEX ON documents 
+USING ivfflat (embedding vector_cosine_ops) 
+WITH (lists = 100);
+
+-- Full-text search
+CREATE INDEX ON documents 
+USING gin (to_tsvector('english', content));
+
+-- Metadata filtering
+CREATE INDEX ON documents (source, updated_at);
+CREATE INDEX ON documents (organization_id, source);
+```
+
+### Query Optimization
+
+Use EXPLAIN ANALYZE to identify slow queries:
+
+```sql
+EXPLAIN ANALYZE
+SELECT * FROM documents
+WHERE organization_id = 'org_abc'
+  AND source = 'slack'
+ORDER BY updated_at DESC
+LIMIT 10;
+```
+
+Look for:
+- Seq Scan (bad) → Add index
+- Index Scan (good)
+- High execution time → Optimize
+
+### Connection Pooling
+
+Configure Supabase pool:
+
+```typescript
+const supabase = createClient(url, key, {
+  db: {
+    pool: {
+      min: 0,
+      max: 10,
+      idleTimeoutMillis: 30000
+    }
+  }
+});
+```
+
+## Sync Performance
+
+### Batch Processing
+
+Process documents in batches:
+
+```typescript
+const BATCH_SIZE = 100;
+
+for (let i = 0; i < documents.length; i += BATCH_SIZE) {
+  const batch = documents.slice(i, i + BATCH_SIZE);
+  await processBatch(batch);
+}
+```
+
+### Parallel Processing
+
+Use worker threads for CPU-intensive tasks:
+
+```typescript
+import { Worker } from 'worker_threads';
+
+const workers = Array(4).fill(null).map(() => 
+  new Worker('./embed-worker.js')
+);
+
+// Distribute work
+await Promise.all(
+  chunks.map((chunk, i) => 
+    workers[i % 4].process(chunk)
+  )
+);
+```
+
+### Rate Limiting
+
+Respect API rate limits:
+
+```typescript
+import pLimit from 'p-limit';
+
+const limit = pLimit(10); // 10 concurrent requests
+
+await Promise.all(
+  documents.map(doc => 
+    limit(() => embedDocument(doc))
+  )
+);
+```
+
+## Frontend Optimization
+
+### Code Splitting
+
+Split large components:
+
+```typescript
+import dynamic from 'next/dynamic';
+
+const HeavyComponent = dynamic(
+  () => import('./HeavyComponent'),
+  { loading: () => <Spinner /> }
+);
+```
+
+### Image Optimization
+
+Use Next.js Image:
+
+```jsx
+import Image from 'next/image';
+
+<Image
+  src="/logo.png"
+  width={200}
+  height={50}
+  alt="Sorcia"
+  priority // For above-fold images
+/>
+```
+
+### API Route Caching
+
+Cache API responses:
+
+```typescript
+export async function GET() {
+  return NextResponse.json(data, {
+    headers: {
+      'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120'
+    }
+  });
+}
+```
+
+## Monitoring
+
+### Key Metrics
+
+Track these metrics:
+
+- **Query latency** - p50, p95, p99
+- **Sync throughput** - docs/second
+- **Error rate** - 4xx, 5xx errors
+- **Database performance** - query time
+- **Memory usage** - heap, RSS
+
+### Tools
+
+```bash
+# Install monitoring
+npm install @sentry/nextjs
+npm install posthog-js
+```
+
+Configure:
+
+```typescript
+// sentry.config.ts
+Sentry.init({
+  dsn: process.env.SENTRY_DSN,
+  tracesSampleRate: 0.1,
+  profilesSampleRate: 0.1
+});
+
+// posthog.ts
+posthog.init(process.env.POSTHOG_KEY, {
+  api_host: 'https://app.posthog.com'
+});
+```
+
+## Scaling
+
+### Horizontal Scaling
+
+Add more instances:
+
+```yaml
+# Kubernetes
+replicas: 5  # Auto-scale 1-10
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+```
+
+### Database Read Replicas
+
+Distribute read load:
+
+```typescript
+const readClient = createClient(READ_REPLICA_URL, key);
+const writeClient = createClient(PRIMARY_URL, key);
+
+// Reads from replica
+const data = await readClient.from('documents').select('*');
+
+// Writes to primary
+await writeClient.from('documents').insert(doc);
+```
+
+### CDN
+
+Use Vercel Edge:
+
+```typescript
+export const config = {
+  runtime: 'edge' // Deploy to edge locations
+};
+```
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Monitor First">
+    Identify bottlenecks before optimizing
+  </Accordion>
+  <Accordion title="Cache Aggressively">
+    Cache at every layer (API, DB, CDN)
+  </Accordion>
+  <Accordion title="Batch Operations">
+    Never process one-by-one
+  </Accordion>
+  <Accordion title="Use Indexes">
+    Index all filtered/sorted columns
+  </Accordion>
+  <Accordion title="Optimize Queries">
+    Use EXPLAIN ANALYZE regularly
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<Card title="Troubleshooting" icon="wrench" href="/advanced/troubleshooting">
+  Debug common issues
+</Card>

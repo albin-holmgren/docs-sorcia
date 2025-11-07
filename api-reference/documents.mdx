@@ -1,0 +1,164 @@
+---
+title: Documents API
+description: 'Manage documents programmatically'
+---
+
+## Overview
+
+The Documents API allows you to create, retrieve, update, and delete documents in your Sorcia knowledge base.
+
+## Create Document
+
+**POST** `/api/documents`
+
+```bash
+curl -X POST https://api.sorcia.ai/api/documents \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "source": "custom-app",
+    "external_id": "doc-123",
+    "title": "Product Roadmap Q1 2024",
+    "content": "Our Q1 priorities include...",
+    "url": "https://app.example.com/docs/123",
+    "metadata": {
+      "author": "product@company.com",
+      "updated_at": "2024-01-15T10:00:00Z",
+      "category": "roadmap"
+    }
+  }'
+```
+
+### Request Parameters
+
+<ParamField body="source" type="string" required>
+  Integration identifier (e.g., "slack", "custom-crm")
+</ParamField>
+
+<ParamField body="external_id" type="string" required>
+  Unique ID in source system
+</ParamField>
+
+<ParamField body="title" type="string" required>
+  Document title
+</ParamField>
+
+<ParamField body="content" type="string" required>
+  Full text content
+</ParamField>
+
+<ParamField body="url" type="string">
+  Link to original document
+</ParamField>
+
+<ParamField body="metadata" type="object">
+  Additional metadata (author, date, tags, etc.)
+</ParamField>
+
+### Response
+
+```json
+{
+  "id": "doc_abc123",
+  "source": "custom-app",
+  "external_id": "doc-123",
+  "title": "Product Roadmap Q1 2024",
+  "indexed_at": "2024-01-15T10:30:00Z",
+  "status": "indexed"
+}
+```
+
+## Get Document
+
+**GET** `/api/documents/:id`
+
+```bash
+curl https://api.sorcia.ai/api/documents/doc_abc123 \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+## Update Document
+
+**PUT** `/api/documents/:id`
+
+```bash
+curl -X PUT https://api.sorcia.ai/api/documents/doc_abc123 \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -d '{"content": "Updated content..."}'
+```
+
+## Delete Document
+
+**DELETE** `/api/documents/:id`
+
+```bash
+curl -X DELETE https://api.sorcia.ai/api/documents/doc_abc123 \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+## List Documents
+
+**GET** `/api/documents`
+
+```bash
+curl "https://api.sorcia.ai/api/documents?source=custom-app&limit=50" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+### Query Parameters
+
+<ParamField query="source" type="string">
+  Filter by integration source
+</ParamField>
+
+<ParamField query="limit" type="number" default="20">
+  Number of results (max 100)
+</ParamField>
+
+<ParamField query="offset" type="number" default="0">
+  Pagination offset
+</ParamField>
+
+## Batch Operations
+
+**POST** `/api/documents/batch`
+
+Create multiple documents at once:
+
+```javascript
+await fetch('https://api.sorcia.ai/api/documents/batch', {
+  method: 'POST',
+  headers: {
+    'Authorization': `Bearer ${apiKey}`,
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    documents: [
+      { source: 'crm', external_id: '1', title: 'Doc 1', content: '...' },
+      { source: 'crm', external_id: '2', title: 'Doc 2', content: '...' },
+      // ... up to 100 documents
+    ]
+  })
+});
+```
+
+## Error Codes
+
+| Code | Meaning |
+|------|---------|
+| 400 | Invalid request body |
+| 401 | Unauthorized |
+| 404 | Document not found |
+| 409 | Document already exists |
+| 429 | Rate limit exceeded |
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Query API" icon="search" href="/api-reference/query">
+    Search documents
+  </Card>
+  <Card title="Webhooks" icon="webhook" href="/api-reference/webhooks">
+    Real-time updates
+  </Card>
+</CardGroup>

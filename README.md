@@ -1,16 +1,26 @@
-# Mintlify Starter Kit
+# Sorcia Documentation
 
-Use the starter kit to get your docs deployed and ready to customize.
+Official documentation for Sorcia - AI-Powered Enterprise Knowledge Base
 
-Click the green **Use this template** button at the top of this repo to copy the Mintlify starter kit. The starter kit contains examples with
+Built with [Mintlify](https://mintlify.com), this repository contains comprehensive guides, API references, and integration documentation for Sorcia.
 
-- Guide pages
-- Navigation
-- Customizations
-- API reference pages
-- Use of popular components
+## 📚 Documentation Structure
 
-**[Follow the full quickstart guide](https://starter.mintlify.com/quickstart)**
+- **Introduction** - What is Sorcia, key features, getting started
+- **Getting Started** - Quickstart, installation, environment setup
+- **Core Concepts** - How Sorcia works, architecture, permissions
+- **Integrations** - Slack, Notion, Google Drive, GitHub, and more
+- **API Reference** - Authentication, query endpoints, webhooks
+- **Team Management** - Roles, permissions, access control
+- **Security & Compliance** - Row-level security, audit logs, compliance
+- **Advanced** - Self-hosting, optimization, troubleshooting
+
+## 🎨 Brand Colors
+
+- **Primary**: `#F97316` (Sorcia Orange)
+- **Dark**: `#1a1a1a` (Black)
+- **Background**: `#FAF9F5` (Cream)
+- **Accent**: `#F0EEE6` (Beige)
 
 ## Development
 

@@ -1,0 +1,57 @@
+---
+title: Confluence Integration
+description: 'Search your Confluence wikis and pages'
+icon: 'book-open'
+---
+
+## Overview
+
+Connect Confluence to search across spaces, pages, and attachments in your wiki.
+
+## Setup
+
+<Steps>
+  <Step title="Connect">
+    Integrations → Confluence → "Connect"
+  </Step>
+  <Step title="Enter Site">
+    Provide your Confluence site URL
+  </Step>
+  <Step title="Authorize">
+    Grant read permissions
+  </Step>
+  <Step title="Select Spaces">
+    Choose which spaces to sync
+  </Step>
+</Steps>
+
+## Synced Content
+
+- Pages and blog posts
+- Page comments
+- Attached documents
+- Page hierarchies
+
+## Configuration
+
+```yaml
+Spaces:
+  - Engineering
+  - Product
+  - Company Wiki
+
+Exclude:
+  - Personal Spaces
+  - Archive
+```
+
+## Sync Time
+
+- Small space (< 100 pages): 5 minutes
+- Large space (> 1,000 pages): 20-30 minutes
+
+## Next Steps
+
+<Card title="Custom Integration" icon="code" href="/integrations/custom">
+  Build your own
+</Card>

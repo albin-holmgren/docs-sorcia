@@ -1,0 +1,207 @@
+---
+title: Access Control
+description: 'Comprehensive access control guide'
+---
+
+## Overview
+
+Sorcia implements multi-layer access control to ensure users only see documents they're authorized to access.
+
+## Access Control Layers
+
+### Layer 1: Organization Membership
+
+**Database-level isolation**
+
+Users must be members of an organization to access any data.
+
+```sql
+-- Row-Level Security ensures org isolation
+WHERE organization_id = current_user_org_id()
+```
+
+### Layer 2: User Roles
+
+**Role-based permissions**
+
+| Role | Query | Manage Team | Integrations | Billing |
+|------|-------|-------------|--------------|---------|
+| Owner | ✓ | ✓ | ✓ | ✓ |
+| Admin | ✓ | ✓ | ✓ | ✗ |
+| Member | ✓ | ✗ | ✗ | ✗ |
+
+### Layer 3: Permission Groups
+
+**Custom group-based access**
+
+Fine-grained control via permission groups:
+- Integration-level access
+- Source-level filtering
+- Document-type restrictions
+
+### Layer 4: Source Permissions
+
+**Mirrors original system**
+
+Respects permissions from:
+- Slack (channel membership)
+- Google Drive (file sharing)
+- Notion (page access)
+- GitHub (repository access)
+
+## Query-Time Filtering
+
+Every search automatically filters:
+
+```typescript
+function filterByPermissions(results, user) {
+  return results.filter(doc => {
+    // Check organization membership
+    if (doc.org_id !== user.org_id) return false;
+    
+    // Check role permissions
+    if (!hasRoleAccess(user.role, doc)) return false;
+    
+    // Check permission groups
+    if (!hasGroupAccess(user.groups, doc)) return false;
+    
+    // Check source permissions
+    if (!hasSourceAccess(user, doc)) return false;
+    
+    return true;
+  });
+}
+```
+
+## Managing Access
+
+### Grant Access
+
+<Steps>
+  <Step title="Add to Group">
+    Add user to appropriate permission group
+  </Step>
+  <Step title="Configure Group">
+    Ensure group has access to required sources
+  </Step>
+  <Step title="Verify">
+    Test with user account
+  </Step>
+</Steps>
+
+### Revoke Access
+
+<Steps>
+  <Step title="Remove from Group">
+    Remove user from permission group
+  </Step>
+  <Step title="Update Source">
+    Remove access in original system (Slack, Drive, etc.)
+  </Step>
+  <Step title="Verify">
+    User should no longer see documents
+  </Step>
+</Steps>
+
+## Audit Trail
+
+All access logged:
+
+```typescript
+{
+  user_id: "user_123",
+  document_id: "doc_abc",
+  action: "query",
+  timestamp: "2024-01-15T10:00:00Z",
+  granted: true
+}
+```
+
+View logs: **Settings** → **Audit Logs**
+
+## Security Scenarios
+
+### Confidential Documents
+
+For sensitive information:
+
+1. **Restrict in Source** - Limit access in Google Drive/Notion
+2. **Create Private Group** - Permission group with specific users
+3. **Monitor Access** - Review audit logs regularly
+
+### Department Isolation
+
+Separate department data:
+
+```yaml
+Sales Group:
+  access:
+    - google-drive: /Sales/*
+    - slack: #sales*
+  exclude:
+    - google-drive: /Engineering/*
+    - slack: #engineering*
+
+Engineering Group:
+  access:
+    - github: all repos
+    - slack: #engineering*
+  exclude:
+    - google-drive: /Sales/*
+    - slack: #sales*
+```
+
+### Temporary Access
+
+Grant time-limited access:
+
+1. Add user to group
+2. Set calendar reminder to revoke
+3. Remove after period expires
+
+<Info>
+  Automated time-limited access coming soon (Enterprise)
+</Info>
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Default Deny">
+    Start with no access, grant as needed
+  </Accordion>
+  <Accordion title="Regular Audits">
+    Review access quarterly
+  </Accordion>
+  <Accordion title="Use Groups, Not Individuals">
+    Manage access via groups for scalability
+  </Accordion>
+  <Accordion title="Monitor Logs">
+    Check audit logs for unusual access patterns
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="User can't see documents">
+    1. Verify org membership
+    2. Check role permissions
+    3. Confirm permission group membership
+    4. Verify source system access
+    5. Check audit logs
+  </Accordion>
+  <Accordion title="Too many results">
+    User may have broad access. Create more restrictive group.
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Security Overview" icon="shield" href="/security/overview">
+    Learn about security
+  </Card>
+  <Card title="Audit Logs" icon="clipboard-list" href="/security/audit-logs">
+    View access logs
+  </Card>
+</CardGroup>

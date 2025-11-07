@@ -1,0 +1,433 @@
+---
+title: Slack Integration
+description: 'Connect Sorcia to your Slack workspace for instant answers'
+icon: 'slack'
+---
+
+## Overview
+
+The Slack integration allows your team to ask questions and get answers directly in Slack using the `/sorcia` command. It's the fastest way to access your knowledge base without leaving your conversation flow.
+
+<Info>
+  **Setup Time**: 2-3 minutes  
+  **Requirements**: Slack workspace admin permissions
+</Info>
+
+## Features
+
+<CardGroup cols={2}>
+  <Card title="Slash Commands" icon="slash-forward">
+    Use `/sorcia [question]` to ask anything
+  </Card>
+  <Card title="Ephemeral Responses" icon="eye-slash">
+    Answers are private by default (only you see them)
+  </Card>
+  <Card title="Message Indexing" icon="message">
+    Search through all your Slack conversations
+  </Card>
+  <Card title="Channel Summaries" icon="list">
+    Get overviews of channel discussions
+  </Card>
+</CardGroup>
+
+## Installation
+
+### Step 1: Navigate to Integrations
+
+1. Log in to your Sorcia dashboard
+2. Click **Integrations** in the sidebar
+3. Find the **Slack** card
+4. Click **Connect to Slack**
+
+### Step 2: Authorize Sorcia
+
+You'll be redirected to Slack to authorize the app:
+
+<Steps>
+  <Step title="Select Workspace">
+    Choose which Slack workspace to connect
+  </Step>
+  
+  <Step title="Review Permissions">
+    Sorcia requests the following permissions:
+    
+    - `channels:history` - Read public channel messages
+    - `channels:read` - View channel list
+    - `chat:write` - Send messages as Sorcia
+    - `commands` - Enable slash commands
+    - `users:read` - Access user directory
+    - `users:read.email` - Match Slack users to Sorcia accounts
+  </Step>
+  
+  <Step title="Grant Access">
+    Click **Allow** to complete the installation
+  </Step>
+</Steps>
+
+<Check>
+  **Success!** Sorcia is now installed in your Slack workspace.
+</Check>
+
+### Step 3: Configure Sync Settings
+
+After installation, configure which channels to index:
+
+1. Return to Sorcia dashboard
+2. Go to **Integrations** → **Slack**
+3. Click **Configure**
+4. Select channels to sync:
+   - **All public channels** (default)
+   - **Specific channels** (choose from list)
+   - **Exclude channels** (blacklist specific channels)
+
+<Warning>
+  Private channels require manual invitation. Invite `@Sorcia` to private channels you want to index.
+</Warning>
+
+## Using the Slash Command
+
+### Basic Usage
+
+Ask any question using the `/sorcia` command:
+
+```bash
+/sorcia What's our refund policy?
+```
+
+Sorcia will respond with:
+- AI-generated answer
+- Source citations (with links)
+- Confidence score
+- Related questions
+
+<img src="/images/slack-response-example.png" alt="Slack Response Example" />
+
+### Advanced Syntax
+
+#### Search Specific Channels
+
+```bash
+/sorcia in:#sales What were Q4 results?
+```
+
+#### Filter by Date
+
+```bash
+/sorcia since:2024-01-01 Product roadmap updates
+```
+
+#### Search Specific Sources
+
+```bash
+/sorcia from:google-drive Engineering handbook
+```
+
+### Response Options
+
+After receiving an answer, you can:
+
+<Tabs>
+  <Tab title="Share Publicly">
+    Click **Share with Channel** to post the answer for everyone
+  </Tab>
+  
+  <Tab title="Ask Follow-up">
+    Click a suggested related question to dig deeper
+  </Tab>
+  
+  <Tab title="View Sources">
+    Click **View All Sources** to see all referenced documents
+  </Tab>
+  
+  <Tab title="Provide Feedback">
+    Click 👍 or 👎 to rate the answer quality
+  </Tab>
+</Tabs>
+
+## Features
+
+### Message Indexing
+
+Sorcia automatically indexes:
+
+- **Public channels** - All messages from selected channels
+- **Private channels** - Only if Sorcia is invited
+- **Direct messages** - Never indexed (privacy)
+- **Threads** - Full thread context included
+- **Files** - Attached documents and PDFs
+- **Links** - Previews and metadata
+
+<Info>
+  **Sync Frequency**: Real-time via webhooks. New messages appear in search within seconds.
+</Info>
+
+### Permission Awareness
+
+Sorcia respects Slack permissions:
+
+- **Public channels**: Visible to all workspace members
+- **Private channels**: Only visible to channel members
+- **Archived channels**: Read-only access maintained
+
+<Check>
+  Users only see results from channels they have access to in Slack.
+</Check>
+
+### Channel Summaries
+
+Get a quick overview of any channel:
+
+```bash
+/sorcia summarize #engineering
+```
+
+Response includes:
+- Key topics discussed
+- Recent decisions made
+- Action items mentioned
+- Active participants
+
+## Configuration
+
+### Sync Settings
+
+Configure what content to index:
+
+| Setting | Options | Default |
+|---------|---------|---------|
+| **Channels** | All public, Selected, Exclude list | All public |
+| **Message History** | All time, Last year, Last 90 days | All time |
+| **Files** | Include, Exclude | Include |
+| **Threads** | Include, Exclude | Include |
+| **Reactions** | Include metadata, Exclude | Exclude |
+
+### Privacy Settings
+
+<AccordionGroup>
+  <Accordion title="Message Retention">
+    Control how long Slack messages are retained in Sorcia:
+    - Match Slack retention policy (recommended)
+    - Custom retention (30/60/90 days, 1 year, forever)
+    - Auto-delete when removed from Slack
+  </Accordion>
+  
+  <Accordion title="User Privacy">
+    - User emails are hashed for privacy
+    - DMs are never indexed
+    - Private channels require explicit access
+    - Users can request their data be excluded
+  </Accordion>
+  
+  <Accordion title="Compliance">
+    - GDPR data export available
+    - Right to erasure supported
+    - Audit logs for all queries
+    - Retention policy enforcement
+  </Accordion>
+</AccordionGroup>
+
+### Notification Settings
+
+Configure when Sorcia sends notifications:
+
+- **New answers** - When Sorcia learns something new
+- **Low confidence** - When answers may be inaccurate
+- **Sync errors** - When message indexing fails
+- **Daily digest** - Summary of questions asked
+
+## Permissions
+
+### Required Scopes
+
+Sorcia needs these Slack OAuth scopes:
+
+```yaml
+bot_scopes:
+  - channels:history      # Read public channel messages
+  - channels:read         # List public channels
+  - chat:write           # Send messages
+  - commands             # Slash commands
+  - users:read           # User directory
+  - users:read.email     # Email addresses
+  - files:read           # Access shared files
+  
+user_scopes:
+  - channels:history     # Access user's channels
+```
+
+### Admin Controls
+
+Workspace admins can:
+
+- Approve/deny Sorcia installation
+- Restrict to specific channels
+- Monitor API usage
+- Revoke access anytime
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Slash command not working">
+    **Solutions**:
+    - Verify Sorcia is installed in your workspace
+    - Check you're in a channel where Sorcia is invited
+    - Re-authorize the Slack integration
+    - Contact support if persists
+  </Accordion>
+  
+  <Accordion title="No results from Slack">
+    **Solutions**:
+    - Verify channels are selected in sync settings
+    - Wait 5-10 minutes for initial sync to complete
+    - Check channel permissions (must be public or Sorcia invited)
+    - Review sync logs for errors
+  </Accordion>
+  
+  <Accordion title="Missing private channel messages">
+    **Solution**: Invite `@Sorcia` to the private channel:
+    ```
+    /invite @Sorcia
+    ```
+    Then wait for sync to complete (1-2 minutes)
+  </Accordion>
+  
+  <Accordion title="Responses are slow">
+    **Causes**:
+    - Large workspace (> 10K messages)
+    - Complex questions requiring multiple sources
+    - High API load (upgrade plan for faster processing)
+    
+    **Solutions**:
+    - Use filters to narrow search scope
+    - Upgrade to Pro/Enterprise for better performance
+  </Accordion>
+</AccordionGroup>
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Onboard Your Team">
+    1. Announce Sorcia in #general
+    2. Share example commands
+    3. Encourage using `/sorcia` instead of asking teammates
+    4. Collect feedback and iterate
+  </Accordion>
+  
+  <Accordion title="Organize Channels">
+    - Use descriptive channel names
+    - Keep channels topic-focused
+    - Archive outdated channels
+    - Pin important messages
+  </Accordion>
+  
+  <Accordion title="Optimize for Search">
+    - Write clear channel descriptions
+    - Use threads for extended discussions
+    - Pin key decisions and resources
+    - Add context with first message
+  </Accordion>
+  
+  <Accordion title="Respect Privacy">
+    - Don't share sensitive info in public channels
+    - Use private channels for confidential topics
+    - Review what's being indexed regularly
+    - Train team on data sensitivity
+  </Accordion>
+</AccordionGroup>
+
+## Advanced Features
+
+### Slack App Home
+
+Access Sorcia's home tab in Slack for:
+
+- **Quick Search** - Search without using slash command
+- **Recent Questions** - View your query history
+- **Popular Questions** - See what teammates ask
+- **Settings** - Configure personal preferences
+
+### Workflow Integration
+
+Trigger Sorcia from Slack workflows:
+
+```yaml
+- action: sorcia.query
+  inputs:
+    question: "{{ workflow.question }}"
+    channel: "{{ workflow.channel }}"
+  output:
+    answer: "{{ sorcia.answer }}"
+```
+
+### API Integration
+
+Programmatically query Slack-indexed content:
+
+```javascript
+const response = await fetch('https://api.sorcia.ai/api/ai/query', {
+  method: 'POST',
+  headers: {
+    'Authorization': `Bearer ${token}`,
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    question: 'Latest in #engineering?',
+    filters: {
+      sources: ['slack'],
+      channels: ['engineering']
+    }
+  })
+});
+```
+
+## Metrics & Analytics
+
+Track Slack integration usage:
+
+- **Questions asked** - Total queries via `/sorcia`
+- **Channels indexed** - Number of synced channels
+- **Messages indexed** - Total Slack messages in knowledge base
+- **Response time** - Average query latency
+- **User adoption** - Team members using Sorcia
+- **Top questions** - Most common Slack queries
+
+<Tip>
+  View analytics in **Dashboard** → **Integrations** → **Slack**
+</Tip>
+
+## Uninstalling
+
+To remove Sorcia from Slack:
+
+<Steps>
+  <Step title="Go to Slack App Settings">
+    Visit your workspace's [app management page](https://slack.com/apps)
+  </Step>
+  
+  <Step title="Find Sorcia">
+    Search for "Sorcia" in installed apps
+  </Step>
+  
+  <Step title="Remove App">
+    Click **Remove** and confirm
+  </Step>
+  
+  <Step title="Clean Up Data (Optional)">
+    In Sorcia dashboard, go to Integrations → Slack → **Delete Data**
+  </Step>
+</Steps>
+
+<Warning>
+  Uninstalling removes Sorcia's access but doesn't delete indexed messages. Delete data manually if needed.
+</Warning>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Connect More Integrations" icon="link" href="/integrations/overview">
+    Add Notion, Google Drive, and more
+  </Card>
+  <Card title="Set Up Permissions" icon="shield" href="/team/access-control">
+    Configure who can access what
+  </Card>
+</CardGroup>

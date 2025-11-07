@@ -1,0 +1,152 @@
+---
+title: Inviting Team Members
+description: 'Add users to your Sorcia organization'
+---
+
+## Overview
+
+Invite teammates to join your Sorcia organization and collaborate on knowledge search.
+
+## Invite via Dashboard
+
+<Steps>
+  <Step title="Navigate to Team">
+    Click **Team Members** in sidebar
+  </Step>
+  <Step title="Click Invite">
+    Click **Invite Member** button
+  </Step>
+  <Step title="Enter Details">
+    - Email address
+    - Role (Owner, Admin, Member)
+    - Optional: Permission groups
+  </Step>
+  <Step title="Send Invitation">
+    Click **Send Invite**
+  </Step>
+</Steps>
+
+## Invitation Email
+
+Invitees receive an email with:
+- Organization name
+- Inviter's name
+- Role being assigned
+- **Accept Invitation** button
+
+<Info>
+  Invitations expire after 7 days. Resend if needed.
+</Info>
+
+## Invite via API
+
+```bash
+curl -X POST https://api.sorcia.ai/api/organizations/org_abc123/members \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -d '{
+    "email": "colleague@company.com",
+    "role": "member"
+  }'
+```
+
+## Bulk Invites
+
+Invite multiple users at once:
+
+1. **Team Members** → **Bulk Invite**
+2. Upload CSV with columns: `email`, `role`
+3. Review and confirm
+4. Invitations sent automatically
+
+### CSV Format
+
+```csv
+email,role
+john@company.com,member
+sarah@company.com,admin
+mike@company.com,member
+```
+
+## Roles
+
+<Tabs>
+  <Tab title="Owner">
+    - Full organization control
+    - Billing management
+    - Delete organization
+    - Limit: 1-3 per org
+  </Tab>
+  <Tab title="Admin">
+    - Manage integrations
+    - Invite/remove members
+    - Configure settings
+    - Cannot: Billing, delete org
+  </Tab>
+  <Tab title="Member">
+    - Ask questions
+    - View own history
+    - Access permitted documents
+    - Cannot: Manage team
+  </Tab>
+</Tabs>
+
+## Managing Invitations
+
+### Pending Invitations
+
+View status: **Team Members** → **Pending** tab
+
+Actions:
+- **Resend** - Send another email
+- **Cancel** - Revoke invitation
+- **Change Role** - Modify before acceptance
+
+### Accepted Invitations
+
+Once accepted:
+- User appears in **Active** tab
+- Can immediately start using Sorcia
+- Inherits organization integrations
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Use Company Email">
+    Only invite users with company email addresses
+  </Accordion>
+  <Accordion title="Start with Member Role">
+    Assign Member role initially, upgrade as needed
+  </Accordion>
+  <Accordion title="Set Permission Groups">
+    Assign users to appropriate groups during invitation
+  </Accordion>
+  <Accordion title="Onboard Properly">
+    Share quickstart guide with new members
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Invitation not received">
+    - Check spam folder
+    - Verify email address
+    - Resend invitation
+  </Accordion>
+  <Accordion title="Can't accept invitation">
+    - Ensure email matches invited address
+    - Check invitation hasn't expired
+    - Contact admin to resend
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Roles & Permissions" icon="shield" href="/team/roles-permissions">
+    Learn about user roles
+  </Card>
+  <Card title="Permission Groups" icon="users" href="/team/permission-groups">
+    Configure access groups
+  </Card>
+</CardGroup>

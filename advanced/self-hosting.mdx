@@ -1,0 +1,231 @@
+---
+title: Self-Hosting Guide
+description: 'Deploy Sorcia on your own infrastructure'
+---
+
+## Overview
+
+Self-host Sorcia for complete control over your deployment and data.
+
+<Warning>
+  Self-hosting requires significant technical expertise. Consider Sorcia Cloud for most use cases.
+</Warning>
+
+## Prerequisites
+
+### Technical Skills
+
+- Next.js deployment
+- PostgreSQL administration
+- Docker/Kubernetes (optional)
+- OAuth configuration
+- DNS management
+
+### Infrastructure
+
+- **Compute**: 2+ CPU cores, 4GB+ RAM
+- **Database**: PostgreSQL 14+ with pgvector
+- **Storage**: 50GB+ SSD
+- **Network**: Static IP, domain name
+
+## Deployment Options
+
+<Tabs>
+  <Tab title="Vercel">
+    **Recommended for most self-hosters**
+    
+    1. Fork GitHub repository
+    2. Import to Vercel
+    3. Configure environment variables
+    4. Deploy
+    
+    Pros: Easy, auto-scaling, CDN
+    Cons: Vendor lock-in
+  </Tab>
+  
+  <Tab title="Docker">
+    **Full control**
+    
+    ```bash
+    docker run -d \
+      --env-file .env \
+      -p 3000:3000 \
+      sorcia:latest
+    ```
+    
+    Pros: Portable, isolated
+    Cons: Manual scaling
+  </Tab>
+  
+  <Tab title="Kubernetes">
+    **Enterprise scale**
+    
+    ```yaml
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: sorcia
+    spec:
+      replicas: 3
+      template:
+        spec:
+          containers:
+          - name: sorcia
+            image: sorcia:latest
+    ```
+    
+    Pros: Auto-scaling, high availability
+    Cons: Complex setup
+  </Tab>
+</Tabs>
+
+## Setup Steps
+
+<Steps>
+  <Step title="Clone Repository">
+    ```bash
+    git clone https://github.com/sorcia-ai/sorcia
+    cd sorcia
+    ```
+  </Step>
+  
+  <Step title="Install Dependencies">
+    ```bash
+    npm install
+    ```
+  </Step>
+  
+  <Step title="Configure Environment">
+    Create `.env.local` with all required variables (see [Environment Setup](/getting-started/environment-setup))
+  </Step>
+  
+  <Step title="Set Up Database">
+    Run schema migration:
+    ```bash
+    npm run db:migrate
+    ```
+  </Step>
+  
+  <Step title="Build Application">
+    ```bash
+    npm run build
+    ```
+  </Step>
+  
+  <Step title="Start Server">
+    ```bash
+    npm start
+    ```
+  </Step>
+</Steps>
+
+## Production Checklist
+
+<AccordionGroup>
+  <Accordion title="Infrastructure">
+    - [ ] Load balancer configured
+    - [ ] SSL certificate installed
+    - [ ] Database backups enabled
+    - [ ] Monitoring set up
+  </Accordion>
+  
+  <Accordion title="Security">
+    - [ ] Environment variables secured
+    - [ ] Firewall rules configured
+    - [ ] Rate limiting enabled
+    - [ ] Audit logging active
+  </Accordion>
+  
+  <Accordion title="Performance">
+    - [ ] CDN configured
+    - [ ] Database indexed
+    - [ ] Caching enabled
+    - [ ] Connection pooling
+  </Accordion>
+</AccordionGroup>
+
+## Maintenance
+
+### Updates
+
+```bash
+# Pull latest
+git pull origin main
+
+# Install dependencies
+npm install
+
+# Migrate database
+npm run db:migrate
+
+# Rebuild
+npm run build
+
+# Restart
+pm2 restart sorcia
+```
+
+### Backups
+
+```bash
+# Database backup
+pg_dump sorcia > backup.sql
+
+# Environment backup
+cp .env .env.backup
+
+# Storage backup
+tar -czf storage.tar.gz ./storage
+```
+
+## Monitoring
+
+### Metrics to Track
+
+- API response times
+- Database query performance
+- Error rates
+- Memory/CPU usage
+- Disk space
+
+### Recommended Tools
+
+- **Sentry** - Error tracking
+- **PostHog** - Analytics
+- **Prometheus** - Metrics
+- **Grafana** - Dashboards
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Database connection failed">
+    - Verify connection string
+    - Check firewall rules
+    - Ensure pgvector extension enabled
+  </Accordion>
+  
+  <Accordion title="Build errors">
+    - Check Node.js version (18+)
+    - Clear node_modules and reinstall
+    - Verify all env variables set
+  </Accordion>
+  
+  <Accordion title="Performance issues">
+    - Add database indexes
+    - Enable caching
+    - Scale horizontally
+    - Optimize queries
+  </Accordion>
+</AccordionGroup>
+
+## Support
+
+Self-hosting support available for Enterprise customers.
+
+Email: enterprise@sorcia.ai
+
+## Next Steps
+
+<Card title="Optimization" icon="zap" href="/advanced/optimization">
+  Performance optimization guide
+</Card>

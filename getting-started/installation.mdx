@@ -1,0 +1,340 @@
+---
+title: Installation
+description: 'Install and configure Sorcia for your organization'
+---
+
+## Self-Hosted Installation
+
+This guide covers how to self-host Sorcia on your own infrastructure. For most users, we recommend using [Sorcia Cloud](https://sorcia.ai/signup) instead.
+
+<Warning>
+  **Self-hosting requires technical expertise.** You'll need experience with:
+  - Node.js and Next.js applications
+  - PostgreSQL and database management
+  - OAuth and API integrations
+  - Production deployment and monitoring
+</Warning>
+
+## Prerequisites
+
+Before you begin, ensure you have:
+
+<Tabs>
+  <Tab title="Software">
+    - **Node.js** 18 or later
+    - **npm** or **yarn** package manager
+    - **Git** for cloning the repository
+    - **PostgreSQL** 14 or later (via Supabase)
+  </Tab>
+  
+  <Tab title="Services">
+    - **Supabase** account and project
+    - **Nango** account (for integrations)
+    - **Stripe** account (for billing)
+    - **OpenAI** API key or AI Gateway access
+    - **Inngest** account (for background jobs)
+  </Tab>
+  
+  <Tab title="Integrations">
+    - **Slack** app credentials (optional)
+    - **Google Cloud** project (for Google Drive)
+    - **Notion** integration (optional)
+    - **GitHub** OAuth app (optional)
+  </Tab>
+</Tabs>
+
+## Step 1: Clone the Repository
+
+```bash
+git clone https://github.com/sorcia-ai/sorcia.git
+cd sorcia
+```
+
+## Step 2: Install Dependencies
+
+```bash
+npm install
+```
+
+This will install all required packages including:
+- Next.js 16
+- Supabase client
+- Vercel AI SDK
+- Inngest
+- Nango SDK
+- Stripe SDK
+
+## Step 3: Set Up Database
+
+### Create Supabase Project
+
+1. Go to [supabase.com](https://supabase.com) and create a new project
+2. Wait for the project to finish provisioning
+3. Navigate to **SQL Editor**
+
+### Enable pgvector Extension
+
+Run this SQL command to enable vector search:
+
+```sql
+create extension if not exists vector;
+```
+
+### Run Schema Migration
+
+Copy the contents of `src/db/schema.sql` and execute in the SQL Editor:
+
+```sql
+-- This will create all necessary tables:
+-- - organizations
+-- - memberships
+-- - connections
+-- - documents
+-- - acls
+-- - answers
+```
+
+<Check>Your database is now set up with all required tables and indexes!</Check>
+
+## Step 4: Configure Environment Variables
+
+Create a `.env.local` file in the root directory:
+
+```bash .env.local
+# Supabase Configuration
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+
+# AI Configuration (OpenAI or AI Gateway)
+OPENAI_API_KEY=sk-your-openai-key
+# OR use AI Gateway:
+AI_GATEWAY_URL=https://your-gateway.workers.dev
+AI_GATEWAY_API_KEY=your-gateway-key
+
+# Nango (Integrations)
+NANGO_SECRET_KEY=your-nango-secret-key
+NANGO_PUBLIC_KEY=your-nango-public-key
+NANGO_HOSTPORT=https://api.nango.dev
+
+# Stripe (Billing)
+STRIPE_SECRET_KEY=sk_test_your-stripe-key
+STRIPE_WEBHOOK_SECRET=whsec_your-webhook-secret
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_your-publishable-key
+NEXT_PUBLIC_STRIPE_PRICE_PRO=price_xxxxx
+
+# Inngest (Background Jobs)
+INNGEST_EVENT_KEY=your-inngest-event-key
+INNGEST_SIGNING_KEY=signkey_your-signing-key
+
+# Slack (Optional)
+SLACK_CLIENT_ID=your-slack-client-id
+SLACK_CLIENT_SECRET=your-slack-client-secret
+SLACK_SIGNING_SECRET=your-signing-secret
+SLACK_BOT_TOKEN=xoxb-your-bot-token
+
+# Application
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+NODE_ENV=development
+```
+
+<Tip>
+  See [Environment Setup](/getting-started/environment-setup) for detailed explanations of each variable.
+</Tip>
+
+## Step 5: Run the Development Server
+
+```bash
+npm run dev
+```
+
+The application will start on `http://localhost:3000`
+
+<Info>
+  **First Launch**: On first run, Sorcia will automatically:
+  - Verify database connection
+  - Check required environment variables
+  - Initialize default settings
+</Info>
+
+## Step 6: Create Your First Organization
+
+1. Navigate to `http://localhost:3000/signup`
+2. Create an account with your email
+3. Verify your email (check Supabase email logs in development)
+4. Create your organization
+
+## Step 7: Configure Integrations
+
+### Set Up Nango
+
+1. Create a [Nango account](https://www.nango.dev)
+2. Create a new project
+3. Configure integrations:
+
+<CodeGroup>
+
+```yaml Slack
+provider: slack
+scopes:
+  - channels:history
+  - channels:read
+  - chat:write
+  - users:read
+  - users:read.email
+```
+
+```yaml Google Drive
+provider: google-drive
+scopes:
+  - https://www.googleapis.com/auth/drive.readonly
+```
+
+```yaml Notion
+provider: notion
+scopes:
+  - read_content
+```
+
+</CodeGroup>
+
+4. Copy your Nango keys to `.env.local`
+
+### Set Up Webhooks
+
+Configure webhook endpoints for real-time updates:
+
+```bash
+# Nango webhooks
+POST /api/nango/webhooks
+
+# Stripe webhooks
+POST /api/stripe/webhooks
+
+# Slack events
+POST /api/slack/events
+```
+
+<Warning>
+  In production, ensure all webhook endpoints are publicly accessible and use HTTPS.
+</Warning>
+
+## Step 8: Test the Installation
+
+Run the health check:
+
+```bash
+curl http://localhost:3000/api/health
+```
+
+Expected response:
+
+```json
+{
+  "status": "ok",
+  "database": "connected",
+  "version": "0.1.0"
+}
+```
+
+## Production Deployment
+
+### Deploy to Vercel
+
+<Steps>
+  <Step title="Push to GitHub">
+    ```bash
+    git add .
+    git commit -m "Initial setup"
+    git push origin main
+    ```
+  </Step>
+  
+  <Step title="Import to Vercel">
+    1. Go to [vercel.com](https://vercel.com)
+    2. Click "New Project"
+    3. Import your GitHub repository
+  </Step>
+  
+  <Step title="Configure Environment Variables">
+    Add all production environment variables in Vercel dashboard
+  </Step>
+  
+  <Step title="Deploy">
+    Click "Deploy" and wait for build to complete
+  </Step>
+</Steps>
+
+### Production Checklist
+
+<AccordionGroup>
+  <Accordion title="Database">
+    - [ ] Production Supabase project created
+    - [ ] pgvector extension enabled
+    - [ ] Schema migrated
+    - [ ] Row-level security policies configured
+    - [ ] Backups enabled
+  </Accordion>
+  
+  <Accordion title="Integrations">
+    - [ ] Nango production keys configured
+    - [ ] OAuth apps created for all integrations
+    - [ ] Webhook endpoints publicly accessible
+    - [ ] SSL certificates valid
+  </Accordion>
+  
+  <Accordion title="Security">
+    - [ ] Environment variables secured
+    - [ ] CORS configured correctly
+    - [ ] Rate limiting enabled
+    - [ ] Audit logging active
+  </Accordion>
+  
+  <Accordion title="Monitoring">
+    - [ ] Error tracking (Sentry)
+    - [ ] Analytics (PostHog)
+    - [ ] Uptime monitoring
+    - [ ] Log aggregation
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Database connection failed">
+    - Verify Supabase URL and keys are correct
+    - Check if pgvector extension is enabled
+    - Ensure database is accessible from your deployment
+  </Accordion>
+  
+  <Accordion title="OAuth redirects not working">
+    - Verify `NEXT_PUBLIC_APP_URL` matches your domain
+    - Check OAuth redirect URIs in integration settings
+    - Ensure URLs use HTTPS in production
+  </Accordion>
+  
+  <Accordion title="Embeddings not generating">
+    - Verify OpenAI API key or AI Gateway credentials
+    - Check API rate limits and quotas
+    - Review Inngest job logs for errors
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card
+    title="Environment Setup"
+    icon="gear"
+    href="/getting-started/environment-setup"
+  >
+    Learn about all environment variables
+  </Card>
+  <Card
+    title="Connect Integrations"
+    icon="link"
+    href="/integrations/overview"
+  >
+    Set up your first integration
+  </Card>
+</CardGroup>

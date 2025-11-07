@@ -1,0 +1,353 @@
+---
+title: Troubleshooting
+description: 'Debug common issues and errors'
+---
+
+## Common Issues
+
+### Authentication Problems
+
+<AccordionGroup>
+  <Accordion title="Can't log in">
+    **Symptoms**: Login fails, "Invalid credentials"
+    
+    **Solutions**:
+    - Verify email and password
+    - Check email is verified
+    - Try password reset
+    - Clear browser cache
+    - Try incognito mode
+  </Accordion>
+  
+  <Accordion title="Token expired">
+    **Symptoms**: "Unauthorized" errors
+    
+    **Solutions**:
+    - Refresh the page
+    - Log out and back in
+    - Check system time is correct
+    - Verify token hasn't been revoked
+  </Accordion>
+</AccordionGroup>
+
+### Search Issues
+
+<AccordionGroup>
+  <Accordion title="No results found">
+    **Symptoms**: Queries return empty results
+    
+    **Solutions**:
+    1. Check documents are synced (Integrations page)
+    2. Verify you have access to sources
+    3. Try broader search terms
+    4. Check filters aren't too restrictive
+    5. Wait 2-3 minutes after document sync
+  </Accordion>
+  
+  <Accordion title="Irrelevant results">
+    **Symptoms**: Results don't match question
+    
+    **Solutions**:
+    - Be more specific in your question
+    - Use filters (source, date range)
+    - Check document quality in source
+    - Rephrase question
+    - Try related questions suggested
+  </Accordion>
+  
+  <Accordion title="Slow queries">
+    **Symptoms**: Queries take > 5 seconds
+    
+    **Solutions**:
+    - Use source filters to narrow scope
+    - Reduce result limit
+    - Check integration sync isn't running
+    - Upgrade plan for better performance
+    - Contact support if persists
+  </Accordion>
+</AccordionGroup>
+
+### Integration Problems
+
+<AccordionGroup>
+  <Accordion title="Integration won't connect">
+    **Symptoms**: OAuth fails, connection error
+    
+    **Solutions**:
+    1. Check you're workspace admin
+    2. Try different browser
+    3. Disable ad blockers
+    4. Verify redirect URL is correct
+    5. Check OAuth app isn't suspended
+  </Accordion>
+  
+  <Accordion title="Documents not syncing">
+    **Symptoms**: Document count not increasing
+    
+    **Solutions**:
+    1. Check integration status (active?)
+    2. Verify OAuth token valid
+    3. Check sync filters
+    4. Look for errors in sync logs
+    5. Try manual re-sync
+    6. Reconnect integration
+  </Accordion>
+  
+  <Accordion title="Permissions not updating">
+    **Symptoms**: User sees/doesn't see expected docs
+    
+    **Solutions**:
+    - Wait 2-3 minutes for permission sync
+    - Check user's role and groups
+    - Verify source system permissions
+    - Manual permission sync:
+      Integrations → [Source] → Sync Permissions
+  </Accordion>
+</AccordionGroup>
+
+### API Errors
+
+<AccordionGroup>
+  <Accordion title="400 Bad Request">
+    **Cause**: Invalid request format
+    
+    **Check**:
+    - JSON is valid
+    - All required fields present
+    - Field types correct
+    - Values within limits
+  </Accordion>
+  
+  <Accordion title="401 Unauthorized">
+    **Cause**: Missing/invalid auth
+    
+    **Solutions**:
+    - Include Authorization header
+    - Check API key is valid
+    - Verify key has necessary permissions
+    - Generate new API key
+  </Accordion>
+  
+  <Accordion title="429 Rate Limited">
+    **Cause**: Too many requests
+    
+    **Solutions**:
+    - Implement exponential backoff
+    - Reduce request frequency
+    - Batch requests where possible
+    - Upgrade plan for higher limits
+  </Accordion>
+  
+  <Accordion title="500 Internal Error">
+    **Cause**: Server error
+    
+    **Solutions**:
+    - Retry with exponential backoff
+    - Check status page: status.sorcia.ai
+    - Contact support if persists
+    - Include error ID from response
+  </Accordion>
+</AccordionGroup>
+
+## Debugging Tools
+
+### Check System Status
+
+```bash
+curl https://status.sorcia.ai/api/status
+```
+
+### Test API Connection
+
+```bash
+curl https://api.sorcia.ai/api/health \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+Expected: `{"status": "ok"}`
+
+### View Browser Console
+
+1. Open DevTools (F12)
+2. Go to Console tab
+3. Look for errors (red text)
+4. Share with support if needed
+
+### Enable Debug Mode
+
+```bash
+# .env.local
+DEBUG=sorcia:*
+LOG_LEVEL=debug
+```
+
+View detailed logs in terminal.
+
+## Performance Issues
+
+### Slow Dashboard
+
+**Symptoms**: Pages load slowly
+
+**Solutions**:
+- Clear browser cache
+- Disable browser extensions
+- Check internet connection
+- Try different browser
+- Check CPU/memory usage
+
+### Slow Sync
+
+**Symptoms**: Sync takes hours
+
+**Normal for**:
+- Large workspaces (10K+ docs)
+- First-time sync
+- Full re-index
+
+**Speed up**:
+- Exclude archived channels/folders
+- Sync during off-hours
+- Upgrade to Pro/Enterprise
+
+## Data Issues
+
+### Missing Documents
+
+<Steps>
+  <Step title="Verify Source Access">
+    Can you see document in original system?
+  </Step>
+  <Step title="Check Filters">
+    Is document excluded by sync filters?
+  </Step>
+  <Step title="Check Permissions">
+    Do you have access permission?
+  </Step>
+  <Step title="Wait for Sync">
+    Allow 5-10 minutes after document created
+  </Step>
+  <Step title="Manual Sync">
+    Force sync: Integrations → Sync Now
+  </Step>
+</Steps>
+
+### Stale Data
+
+**Symptoms**: Out-of-date information
+
+**Solutions**:
+- Check last sync time
+- Verify webhooks are working
+- Manual re-sync
+- Check integration isn't paused
+
+## Getting Help
+
+### Self-Service
+
+1. **Check this guide** - Common issues covered
+2. **Search docs** - Use search bar
+3. **Status page** - status.sorcia.ai
+4. **Community** - discord.gg/sorcia
+
+### Contact Support
+
+**Email**: support@sorcia.ai
+
+Include:
+- **Account email**
+- **Organization name**
+- **Issue description**
+- **Steps to reproduce**
+- **Screenshots** (if applicable)
+- **Error messages**
+- **Browser/device info**
+
+**Response Time**:
+- Free: 2-3 business days
+- Pro: 1 business day
+- Enterprise: 4 hours
+
+### Emergency Contact
+
+**Enterprise customers only**
+
+- **Slack Connect** - Dedicated channel
+- **Phone**: Contact your CSM
+- **On-call**: For critical outages
+
+## Diagnostic Information
+
+When contacting support, include:
+
+```bash
+# System info
+Browser: Chrome 120.0
+OS: macOS 14.1
+Plan: Pro
+Organization: org_abc123
+
+# Error details
+Error code: 500
+Error ID: err_xyz789
+Timestamp: 2024-01-15T10:30:00Z
+Endpoint: /api/ai/query
+
+# Steps to reproduce
+1. Go to Ask Sorcia
+2. Enter "test question"
+3. Click search
+4. Error appears
+```
+
+## Logs
+
+### Access Logs
+
+**Settings** → **Audit Logs**
+
+Shows:
+- All queries
+- API calls
+- Integration syncs
+- Permission changes
+
+### Integration Logs
+
+**Integrations** → [Integration] → **View Logs**
+
+Shows:
+- Sync history
+- Error messages
+- Document counts
+- Permission syncs
+
+## Preventive Maintenance
+
+<AccordionGroup>
+  <Accordion title="Regular Checks">
+    - Review integrations monthly
+    - Check sync status weekly
+    - Monitor query performance
+    - Review audit logs quarterly
+  </Accordion>
+  
+  <Accordion title="Keep Updated">
+    - Update API clients
+    - Rotate API keys quarterly
+    - Review team members monthly
+    - Update integration permissions
+  </Accordion>
+  
+  <Accordion title="Monitor Limits">
+    - Check query quota usage
+    - Monitor storage limits
+    - Track API rate limits
+    - Plan upgrades proactively
+  </Accordion>
+</AccordionGroup>
+
+---
+
+**Still stuck?** Contact support@sorcia.ai - we're here to help!

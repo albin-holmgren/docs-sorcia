@@ -1,0 +1,117 @@
+---
+title: Organizations API
+description: 'Manage organizations and members'
+---
+
+## Overview
+
+Manage organizations, members, and settings programmatically.
+
+## Get Organization
+
+**GET** `/api/organizations/:id`
+
+```bash
+curl https://api.sorcia.ai/api/organizations/org_abc123 \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+### Response
+
+```json
+{
+  "id": "org_abc123",
+  "name": "Acme Inc",
+  "billing_tier": "pro",
+  "member_count": 15,
+  "created_at": "2024-01-01T00:00:00Z"
+}
+```
+
+## List Members
+
+**GET** `/api/organizations/:id/members`
+
+```bash
+curl https://api.sorcia.ai/api/organizations/org_abc123/members \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+### Response
+
+```json
+{
+  "members": [
+    {
+      "user_id": "user_123",
+      "email": "john@acme.com",
+      "role": "owner",
+      "joined_at": "2024-01-01T00:00:00Z"
+    }
+  ]
+}
+```
+
+## Invite Member
+
+**POST** `/api/organizations/:id/members`
+
+```bash
+curl -X POST https://api.sorcia.ai/api/organizations/org_abc123/members \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -d '{
+    "email": "newuser@acme.com",
+    "role": "member"
+  }'
+```
+
+### Request Parameters
+
+<ParamField body="email" type="string" required>
+  User email address
+</ParamField>
+
+<ParamField body="role" type="string" required>
+  User role: `owner`, `admin`, or `member`
+</ParamField>
+
+## Remove Member
+
+**DELETE** `/api/organizations/:id/members/:user_id`
+
+```bash
+curl -X DELETE https://api.sorcia.ai/api/organizations/org_abc123/members/user_123 \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+## Update Member Role
+
+**PATCH** `/api/organizations/:id/members/:user_id`
+
+```bash
+curl -X PATCH https://api.sorcia.ai/api/organizations/org_abc123/members/user_123 \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -d '{"role": "admin"}'
+```
+
+## Organization Settings
+
+**PATCH** `/api/organizations/:id/settings`
+
+```bash
+curl -X PATCH https://api.sorcia.ai/api/organizations/org_abc123/settings \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -d '{
+    "name": "Acme Corporation",
+    "features": {
+      "slack_integration": true,
+      "api_access": true
+    }
+  }'
+```
+
+## Next Steps
+
+<Card title="Authentication" icon="key" href="/api-reference/authentication">
+  API authentication guide
+</Card>

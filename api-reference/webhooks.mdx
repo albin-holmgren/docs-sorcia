@@ -1,0 +1,169 @@
+---
+title: Webhooks
+description: 'Receive real-time updates from Sorcia'
+---
+
+## Overview
+
+Webhooks notify your application when events occur in Sorcia, such as documents being indexed or queries being made.
+
+## Setting Up Webhooks
+
+<Steps>
+  <Step title="Create Endpoint">
+    Set up HTTPS endpoint to receive webhooks
+  </Step>
+  <Step title="Configure in Sorcia">
+    Settings → Webhooks → Add Webhook
+  </Step>
+  <Step title="Select Events">
+    Choose which events to receive
+  </Step>
+  <Step title="Verify">
+    Test webhook with sample payload
+  </Step>
+</Steps>
+
+## Available Events
+
+### `document.indexed`
+
+Triggered when a document is successfully indexed.
+
+```json
+{
+  "event": "document.indexed",
+  "timestamp": "2024-01-15T10:30:00Z",
+  "data": {
+    "document_id": "doc_abc123",
+    "source": "slack",
+    "external_id": "msg_123",
+    "title": "Product Update",
+    "indexed_at": "2024-01-15T10:30:00Z"
+  }
+}
+```
+
+### `document.updated`
+
+Document content changed.
+
+```json
+{
+  "event": "document.updated",
+  "timestamp": "2024-01-15T11:00:00Z",
+  "data": {
+    "document_id": "doc_abc123",
+    "changes": ["content", "metadata"]
+  }
+}
+```
+
+### `document.deleted`
+
+Document removed from index.
+
+```json
+{
+  "event": "document.deleted",
+  "timestamp": "2024-01-15T12:00:00Z",
+  "data": {
+    "document_id": "doc_abc123"
+  }
+}
+```
+
+### `query.completed`
+
+Query processed (requires analytics permission).
+
+```json
+{
+  "event": "query.completed",
+  "timestamp": "2024-01-15T13:00:00Z",
+  "data": {
+    "query_id": "qry_abc123",
+    "user_id": "user_123",
+    "question": "What's our vacation policy?",
+    "confidence": 0.95,
+    "sources_used": 3
+  }
+}
+```
+
+## Webhook Signature
+
+Verify webhook authenticity using signature:
+
+```javascript
+const crypto = require('crypto');
+
+function verifyWebhook(payload, signature, secret) {
+  const hmac = crypto
+    .createHmac('sha256', secret)
+    .update(JSON.stringify(payload))
+    .digest('hex');
+  
+  return crypto.timingSafeEqual(
+    Buffer.from(signature),
+    Buffer.from(hmac)
+  );
+}
+
+// Express middleware
+app.post('/webhooks/sorcia', (req, res) => {
+  const signature = req.headers['x-sorcia-signature'];
+  const isValid = verifyWebhook(req.body, signature, process.env.WEBHOOK_SECRET);
+  
+  if (!isValid) {
+    return res.status(401).send('Invalid signature');
+  }
+  
+  // Process webhook
+  handleWebhook(req.body);
+  res.status(200).send('OK');
+});
+```
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Respond Quickly">
+    Return 200 status within 5 seconds. Process async if needed.
+  </Accordion>
+  <Accordion title="Verify Signatures">
+    Always verify webhook signatures to prevent spoofing.
+  </Accordion>
+  <Accordion title="Handle Retries">
+    Webhooks retry up to 3 times. Implement idempotency.
+  </Accordion>
+  <Accordion title="Use HTTPS">
+    Webhook endpoints must use HTTPS in production.
+  </Accordion>
+</AccordionGroup>
+
+## Retry Behavior
+
+Failed webhooks are retried:
+- **1st retry**: 1 minute later
+- **2nd retry**: 5 minutes later
+- **3rd retry**: 15 minutes later
+- **After 3 failures**: Webhook disabled
+
+## Testing
+
+Test webhooks locally with ngrok:
+
+```bash
+# Start ngrok
+ngrok http 3000
+
+# Use ngrok URL in webhook settings
+https://abc123.ngrok.io/webhooks/sorcia
+```
+
+## Next Steps
+
+<Card title="Documents API" icon="file" href="/api-reference/documents">
+  Manage documents
+</Card>
