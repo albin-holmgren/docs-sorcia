@@ -2,6 +2,8 @@
 
 Official documentation for Sorcia - AI-Powered Enterprise Knowledge Base
 
+**Live Documentation**: Coming soon!
+
 Built with [Mintlify](https://mintlify.com), this repository contains comprehensive guides, API references, and integration documentation for Sorcia.
 
 ## 📚 Documentation Structure
